@@ -4,7 +4,6 @@ import java.util.Optional;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -37,10 +36,11 @@ public class SecurityConfig {
         return username -> {
             Optional<User> userOptional = userRepository.findByUsername(username);
             User user = userOptional.orElseThrow(() -> new UsernameNotFoundException("User not found"));
+            // Convert roles from comma-separated string to an array if necessary
             return org.springframework.security.core.userdetails.User
                     .withUsername(user.getUsername())
                     .password(user.getPassword())
-                    .roles(user.getRole())
+                    .roles(user.getRole().split(","))  // Adjust according to your role storage
                     .build();
         };
     }
@@ -56,7 +56,7 @@ public class SecurityConfig {
                 .formLogin(formLogin ->
                         formLogin
                                 .loginPage("/login")
-                                .defaultSuccessUrl("/home", true)  // Redirect to /home after successful login
+                                .defaultSuccessUrl("/home", true)
                                 .permitAll()
                 )
                 .logout(logout ->
@@ -67,11 +67,8 @@ public class SecurityConfig {
                 )
                 .exceptionHandling(exceptionHandling ->
                         exceptionHandling
-                                .accessDeniedPage("/403")  // Custom access denied page
+                                .accessDeniedPage("/403")
                 );
-
-        AuthenticationManagerBuilder auth = http.getSharedObject(AuthenticationManagerBuilder.class);
-        auth.userDetailsService(userDetailsService()).passwordEncoder(passwordEncoder());
 
         return http.build();
     }

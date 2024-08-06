@@ -12,14 +12,14 @@ public class MovieDAO {
 
     // Method to update a movie
     public void updateMovie(Movie movie) throws SQLException {
-        String sql = "UPDATE movies SET title = ?, genre = ?, release_year = ? WHERE id = ?";
+        String sql = "UPDATE movies SET title = ?, genre = ?, release_year = ?, description = ? WHERE id = ?";
         try (Connection conn = DriverManager.getConnection(url);
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setString(1, movie.getDescription());
-            pstmt.setInt(2, movie.getReleaseYear());
-            pstmt.setString(3, movie.getGenre());
-            pstmt.setString(4, movie.getTitle());
-            pstmt.setInt(5, movie.getId());
+            pstmt.setString(1, movie.getTitle());
+            pstmt.setString(2, movie.getGenre());
+            pstmt.setInt(3, movie.getReleaseYear());
+            pstmt.setString(4, movie.getDescription());
+            pstmt.setLong(5, movie.getId());
             pstmt.executeUpdate();
         }
     }
@@ -34,28 +34,26 @@ public class MovieDAO {
         }
     }
 
+    // Method to add a new movie
     public void addMovie(Movie movie) throws SQLException {
-        String sql = "INSERT INTO movies (title, genre, release_year) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO movies (title, genre, release_year, description) VALUES (?, ?, ?, ?)";
 
-        // Establish a connection to the database
         try (Connection conn = DriverManager.getConnection(url);
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-            // Set parameters for the prepared statement
             pstmt.setString(1, movie.getTitle());
-            pstmt.setString(3, movie.getGenre());
-            pstmt.setInt(4, movie.getReleaseYear());
-            pstmt.setString(5, movie.getDescription());
+            pstmt.setString(2, movie.getGenre());
+            pstmt.setInt(3, movie.getReleaseYear());
+            pstmt.setString(4, movie.getDescription());
 
-            // Execute the update
             pstmt.executeUpdate();
         } catch (SQLException e) {
-            // Handle SQL exception
             e.printStackTrace();
             throw e; // Re-throw the exception if needed
         }
     }
 
+    // Method to get a movie by ID
     public Movie getMovieById(int id) throws SQLException {
         Movie movie = null;
         String sql = "SELECT * FROM movies WHERE id = ?";
@@ -67,7 +65,7 @@ public class MovieDAO {
             try (ResultSet rs = pstmt.executeQuery()) {
                 if (rs.next()) {
                     movie = new Movie();
-                    movie.setId((long) rs.getInt("id"));
+                    movie.setId(rs.getLong("id"));
                     movie.setTitle(rs.getString("title"));
                     movie.setGenre(rs.getString("genre"));
                     movie.setReleaseYear(rs.getInt("release_year"));
@@ -82,6 +80,7 @@ public class MovieDAO {
         return movie;
     }
 
+    // Method to get all movies
     public List<Movie> getAllMovies() throws SQLException {
         List<Movie> movies = new ArrayList<>();
         String sql = "SELECT * FROM movies";
@@ -92,7 +91,7 @@ public class MovieDAO {
 
             while (rs.next()) {
                 Movie movie = new Movie();
-                movie.setId((long) rs.getInt("id"));
+                movie.setId(rs.getLong("id"));
                 movie.setTitle(rs.getString("title"));
                 movie.setGenre(rs.getString("genre"));
                 movie.setReleaseYear(rs.getInt("release_year"));
@@ -106,7 +105,4 @@ public class MovieDAO {
 
         return movies;
     }
-
-
-
 }
