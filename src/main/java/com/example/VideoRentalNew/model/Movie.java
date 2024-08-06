@@ -12,20 +12,20 @@ public class Movie implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String title;
-    private String director;
     private String genre;
-    private int releaseYear;
+    private int release_year;
+    private String description;
 
     // Default constructor
     public Movie() {
     }
 
     // Parameterized constructor
-    public Movie(String title, String director, String genre, int releaseYear) {
+    public Movie(String title, String genre, int release_year, String description) {
         this.title = title;
-        this.director = director;
         this.genre = genre;
-        this.releaseYear = releaseYear;
+        this.release_year = release_year;
+        this.description = description;
     }
 
     // Getter and Setter for id
@@ -46,15 +46,6 @@ public class Movie implements Serializable {
         this.title = title;
     }
 
-    // Getter and Setter for director
-    public String getDirector() {
-        return director;
-    }
-
-    public void setDirector(String director) {
-        this.director = director;
-    }
-
 
     // Getter and Setter for genre
     public String getGenre() {
@@ -67,11 +58,20 @@ public class Movie implements Serializable {
 
     // Getter and Setter for releaseYear
     public int getReleaseYear() {
-        return releaseYear;
+        return release_year;
     }
 
     public void setReleaseYear(int releaseYear) {
-        this.releaseYear = releaseYear;
+        this.release_year = releaseYear;
+    }
+
+    // Getter and Setter for description
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     // Override toString() for a string representation of the movie
@@ -81,7 +81,8 @@ public class Movie implements Serializable {
                 "id=" + id +
                 ", title='" + title + '\'' +
                 ", genre='" + genre + '\'' +
-                ", releaseYear=" + releaseYear +
+                ", release_year=" + release_year +
+                ", description=" + description +
                 '}';
     }
 

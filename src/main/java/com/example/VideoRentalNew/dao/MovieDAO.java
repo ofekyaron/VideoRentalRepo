@@ -12,13 +12,13 @@ public class MovieDAO {
 
     // Method to update a movie
     public void updateMovie(Movie movie) throws SQLException {
-        String sql = "UPDATE movies SET title = ?, genre = ?, releaseYear = ? WHERE id = ?";
+        String sql = "UPDATE movies SET title = ?, genre = ?, release_year = ? WHERE id = ?";
         try (Connection conn = DriverManager.getConnection(url);
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setString(1, movie.getTitle());
-            pstmt.setString(2, movie.getGenre());
-            pstmt.setInt(3, movie.getReleaseYear());
-            pstmt.setString(4, movie.getDirector());
+            pstmt.setString(1, movie.getDescription());
+            pstmt.setInt(2, movie.getReleaseYear());
+            pstmt.setString(3, movie.getGenre());
+            pstmt.setString(4, movie.getTitle());
             pstmt.setInt(5, movie.getId());
             pstmt.executeUpdate();
         }
@@ -35,7 +35,7 @@ public class MovieDAO {
     }
 
     public void addMovie(Movie movie) throws SQLException {
-        String sql = "INSERT INTO movies (title, genre, releaseYear) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO movies (title, genre, release_year) VALUES (?, ?, ?)";
 
         // Establish a connection to the database
         try (Connection conn = DriverManager.getConnection(url);
@@ -43,9 +43,9 @@ public class MovieDAO {
 
             // Set parameters for the prepared statement
             pstmt.setString(1, movie.getTitle());
-            pstmt.setString(2, movie.getDirector());
             pstmt.setString(3, movie.getGenre());
             pstmt.setInt(4, movie.getReleaseYear());
+            pstmt.setString(5, movie.getDescription());
 
             // Execute the update
             pstmt.executeUpdate();
@@ -68,10 +68,10 @@ public class MovieDAO {
                 if (rs.next()) {
                     movie = new Movie();
                     movie.setId((long) rs.getInt("id"));
-                    movie.setDirector(rs.getString("director"));
                     movie.setTitle(rs.getString("title"));
                     movie.setGenre(rs.getString("genre"));
-                    movie.setReleaseYear(rs.getInt("releaseYear"));
+                    movie.setReleaseYear(rs.getInt("release_year"));
+                    movie.setDescription(rs.getString("description"));
                 }
             }
         } catch (SQLException e) {
@@ -93,10 +93,10 @@ public class MovieDAO {
             while (rs.next()) {
                 Movie movie = new Movie();
                 movie.setId((long) rs.getInt("id"));
-                movie.setDirector(rs.getString("director"));
                 movie.setTitle(rs.getString("title"));
                 movie.setGenre(rs.getString("genre"));
-                movie.setReleaseYear(rs.getInt("releaseYear"));
+                movie.setReleaseYear(rs.getInt("release_year"));
+                movie.setDescription(rs.getString("description"));
                 movies.add(movie);
             }
         } catch (SQLException e) {

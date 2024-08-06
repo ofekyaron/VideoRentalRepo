@@ -8,6 +8,6 @@ public class HomeController {
 
     @GetMapping("/index")
     public String index() {
-        return "index"; // Refers to src/main/resources/templates/index.html
+        return "index.xhtml"; // Refers to src/main/resources/templates/index.xhtml
     }
 }
