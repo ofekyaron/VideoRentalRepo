@@ -31,7 +31,6 @@ public class UserController {
         user.setPassword(passwordEncoder.encode(password)); // Ensure this is BCrypt encoded
         user.setEmail(email);
         user.setRoles("USER"); // Store role without 'ROLE_' prefix
-        userService.registerUser(user);
         return "redirect:/login";
     }
 

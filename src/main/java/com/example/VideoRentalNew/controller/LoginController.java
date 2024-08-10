@@ -11,11 +11,6 @@ public class LoginController {
         return "login";  // Return the login view name
     }
 
-    @GetMapping("/home")
-    public String home() {
-        return "home";  // Return the home view name
-    }
-
     @GetMapping("/403")
     public String accessDenied() {
         return "403";  // Return the 403 access denied view name

@@ -21,17 +21,17 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
 
-        // Create a list of authorities with roles prefixed with 'ROLE_'
-        List<SimpleGrantedAuthority> authorities = Collections.singletonList(
-                new SimpleGrantedAuthority("ROLE_" + user.getRoles())
-        );
+        // Remove "ROLE_" prefix if it exists
+        String role = user.getRoles().startsWith("ROLE_")
+                ? user.getRoles().substring(5)
+                : user.getRoles();
 
         return org.springframework.security.core.userdetails.User
                 .withUsername(user.getUsername())
                 .password(user.getPassword())
-                .authorities(authorities)
+                .roles(role) // Spring Security will add the "ROLE_" prefix
                 .build();
     }
 }
