@@ -31,8 +31,12 @@ public class MovieService {
         return movieDAO.getAllMovies();
     }
 
-    // Method to get a movie by ID
-    public Movie getMovieById(int id) throws SQLException {
+    public List<Movie> getAvailableMovies() throws SQLException {
+        return movieDAO.getAvailableMovies();
+    }
+
+    // Method to get a movie by IDdeleteMovie
+    public Movie getMovieById(Long id) throws SQLException {
         return movieDAO.getMovieById(id);
     }
 
@@ -46,7 +50,7 @@ public class MovieService {
     }
 
     // Method to delete a movie by ID
-    public void deleteMovie(int id) throws SQLException {
+    public void deleteMovie(Long id) throws SQLException {
         // Delete movie using DAO
         movieDAO.deleteMovie(id);
     }

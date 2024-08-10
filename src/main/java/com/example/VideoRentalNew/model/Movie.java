@@ -16,6 +16,8 @@ public class Movie implements Serializable {
     private String genre;
     private int release_year;
     private String description;
+    @Column(name = "available")
+    private boolean available = true;
 
     // Default constructor
     public Movie() {
@@ -75,6 +77,14 @@ public class Movie implements Serializable {
         this.description = description;
     }
 
+    public boolean isAvailable() {
+        return available;
+    }
+
+    public void setAvailable(boolean available) {
+        this.available = available;
+    }
+
     // Override toString() for a string representation of the movie
     @Override
     public String toString() {
@@ -84,6 +94,7 @@ public class Movie implements Serializable {
                 ", genre='" + genre + '\'' +
                 ", release_year=" + release_year +
                 ", description=" + description +
+                ", available=" + available +
                 '}';
     }
 

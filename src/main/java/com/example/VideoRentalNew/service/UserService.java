@@ -27,6 +27,11 @@ public class UserService {
                 .orElseThrow(() -> new RuntimeException("User not found: " + username));
     }
 
+    public User getUserById(Long id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
+    }
+
     // Uncomment and fix if existsByUsername method is needed
     // public boolean existsByUsername(String username) {
     //     return userRepository.existsByUsername(username);

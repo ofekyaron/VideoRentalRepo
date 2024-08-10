@@ -20,51 +20,82 @@ public class MoviesController {
 
     // Get all movies
     @GetMapping
-    public ResponseEntity<List<Movie>> getAllMovies() throws SQLException {
-        List<Movie> movies = movieService.getAllMovies();
-        return new ResponseEntity<>(movies, HttpStatus.OK);
+    public ResponseEntity<List<Movie>> getAllMovies() {
+        try {
+            List<Movie> movies = movieService.getAllMovies();
+            return new ResponseEntity<>(movies, HttpStatus.OK);
+        } catch (SQLException e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    // Get available movies
+    @GetMapping("/available")
+    public ResponseEntity<List<Movie>> getAvailableMovies() {
+        try {
+            List<Movie> availableMovies = movieService.getAvailableMovies();
+            return new ResponseEntity<>(availableMovies, HttpStatus.OK);
+        } catch (SQLException e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     // Get a movie by ID
     @GetMapping("/{id}")
-    public ResponseEntity<Movie> getMovieById(@PathVariable("id") Long id) throws SQLException {
-        Movie movie = movieService.getMovieById(Math.toIntExact(id));
-        if (movie != null) {
-            return new ResponseEntity<>(movie, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    public ResponseEntity<Movie> getMovieById(@PathVariable("id") Long id) {
+        try {
+            Movie movie = movieService.getMovieById(id);
+            if (movie != null) {
+                return new ResponseEntity<>(movie, HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+        } catch (SQLException e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     // Add a new movie
     @PostMapping
-    public ResponseEntity<Movie> addMovie(@RequestBody Movie movie) throws SQLException {
-        movieService.addMovie(movie);
-        return new ResponseEntity<>(movie, HttpStatus.CREATED);
+    public ResponseEntity<Movie> addMovie(@RequestBody Movie movie) {
+        try {
+            movieService.addMovie(movie);
+            return new ResponseEntity<>(movie, HttpStatus.CREATED);
+        } catch (SQLException e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     // Update an existing movie
     @PutMapping("/{id}")
-    public ResponseEntity<Movie> updateMovie(@PathVariable("id") Long id, @RequestBody Movie movie) throws SQLException {
-        Movie existingMovie = movieService.getMovieById(Math.toIntExact(id));
-        if (existingMovie != null) {
-            movie.setId(id); // Ensure the ID is set for updating
-            movieService.updateMovie(movie);
-            return new ResponseEntity<>(movie, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    public ResponseEntity<Movie> updateMovie(@PathVariable("id") Long id, @RequestBody Movie movie) {
+        try {
+            Movie existingMovie = movieService.getMovieById(id);
+            if (existingMovie != null) {
+                movie.setId(id); // Ensure the ID is set for updating
+                movieService.updateMovie(movie);
+                return new ResponseEntity<>(movie, HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+        } catch (SQLException e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     // Delete a movie
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteMovie(@PathVariable("id") Long id) throws SQLException {
-        Movie existingMovie = movieService.getMovieById(Math.toIntExact(id));
-        if (existingMovie != null) {
-            movieService.deleteMovie(Math.toIntExact(id));
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    public ResponseEntity<Void> deleteMovie(@PathVariable("id") Long id) {
+        try {
+            Movie existingMovie = movieService.getMovieById(id);
+            if (existingMovie != null) {
+                movieService.deleteMovie(id);
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            } else {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+        } catch (SQLException e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

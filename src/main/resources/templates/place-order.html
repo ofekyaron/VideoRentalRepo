@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Place Order</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body>
+<h1>Place Order</h1>
+<div id="orderDetails"></div>
+
+<script>
+        function getUrlParams() {
+            const params = new URLSearchParams(window.location.search);
+            return {
+                userId: params.get('userId'),
+                movieId: params.get('movieId')
+            };
+        }
+
+        function placeOrder() {
+            const { userId, movieId } = getUrlParams();
+            axios.post('/api/orders/rent', null, { params: { userId, movieId } })
+                .then(function (response) {
+                    alert('Order placed successfully!');
+                    window.location.href = 'order-history.html?userId=' + userId;
+                })
+                .catch(function (error) {
+                    console.error('Error placing order:', error);
+                    alert('Failed to place order. Please try again.');
+                });
+        }
+
+        function loadMovieDetails() {
+            const { movieId } = getUrlParams();
+            axios.get(`/api/movies/${movieId}`)
+                .then(function (response) {
+                    const movie = response.data;
+                    document.getElementById('orderDetails').innerHTML = `
+                        <h2>${movie.title}</h2>
+                        <p>Genre: ${movie.genre}</p>
+                        <p>Release Year: ${movie.releaseYear}</p>
+                        <p>${movie.description}</p>
+                        <button onclick="placeOrder()">Confirm Rental</button>
+                    `;
+                })
+                .catch(function (error) {
+                    console.error('Error loading movie details:', error);
+                });
+        }
+
+        loadMovieDetails();
+    </script>
+</body>
+</html>

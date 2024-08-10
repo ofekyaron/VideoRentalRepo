@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order History</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body>
+<h1>Order History</h1>
+<div id="orderList"></div>
+
+<script>
+        function loadOrders() {
+            const userId = new URLSearchParams(window.location.search).get('userId');
+            axios.get(`/api/orders/user/${userId}`)
+                .then(function (response) {
+                    const orders = response.data;
+                    const orderList = document.getElementById('orderList');
+                    orderList.innerHTML = '';
+                    orders.forEach(function(order) {
+                        orderList.innerHTML += `
+                            <div>
+                                <h2>${order.movie.title}</h2>
+                                <p>Order Date: ${new Date(order.orderDate).toLocaleString()}</p>
+                                <p>Return Date: ${order.returnDate ? new Date(order.returnDate).toLocaleString() : 'Not returned yet'}</p>
+                                ${!order.returnDate ? `<button onclick="returnMovie(${order.id})">Return Movie</button>` : ''}
+                            </div>
+                        `;
+                    });
+                })
+                .catch(function (error) {
+                    console.error('Error loading orders:', error);
+                });
+        }
+
+        function returnMovie(orderId) {
+            axios.post(`/api/orders/${orderId}/return`)
+                .then(function (response) {
+                    alert('Movie returned successfully!');
+                    loadOrders();
+                })
+                .catch(function (error) {
+                    console.error('Error returning movie:', error);
+                    alert('Failed to return movie. Please try again.');
+                });
+        }
+
+        loadOrders();
+    </script>
+</body>
+</html>

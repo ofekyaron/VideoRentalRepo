@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Available Movies</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body>
+<h1>Available Movies</h1>
+<div id="movieList"></div>
+
+<script>
+        function loadMovies() {
+            axios.get('/api/movies/available')
+                .then(function (response) {
+                    const movies = response.data;
+                    const movieList = document.getElementById('movieList');
+                    movieList.innerHTML = '';
+                    movies.forEach(function(movie) {
+                        movieList.innerHTML += `
+                            <div>
+                                <h2>${movie.title}</h2>
+                                <p>Genre: ${movie.genre}</p>
+                                <p>Release Year: ${movie.releaseYear}</p>
+                                <p>${movie.description}</p>
+                                <button onclick="rentMovie(${movie.id})">Rent</button>
+                            </div>
+                        `;
+                    });
+                })
+                .catch(function (error) {
+                    console.error('Error loading movies:', error);
+                });
+        }
+
+        function rentMovie(movieId) {
+            // Assuming you have the user's ID available (e.g., from a login system)
+            const userId = 1; // Replace with actual user ID
+            window.location.href = `place-order.html?userId=${userId}&movieId=${movieId}`;
+        }
+
+        loadMovies();
+    </script>
+</body>
+</html>
