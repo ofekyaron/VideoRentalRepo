@@ -9,12 +9,20 @@ public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", columnDefinition = "INTEGER")
     private Long id;
 
+    @Column(unique = true, nullable = false)
     private String username;
+
+    @Column(nullable = false)
     private String password;
+
+    @Column(nullable = false)
+    private String roles;
+
+    @Column(nullable = false)
     private String email;
-    private String role;
 
     // Getters and setters
     public Long getId() {
@@ -33,6 +41,10 @@ public class User {
         this.username = username;
     }
 
+    public void setRoles(String roles) {
+        this.roles = roles;
+    }
+
     public String getPassword() {
         return password;
     }
@@ -49,7 +61,7 @@ public class User {
         this.email = email;
     }
 
-    public String getRole() {
-        return role;
+    public String getRoles() {
+        return roles;
     }
 }

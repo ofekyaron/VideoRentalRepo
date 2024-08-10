@@ -10,6 +10,7 @@ public class Movie implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", columnDefinition = "INTEGER")
     private Long id;
     private String title;
     private String genre;
@@ -56,13 +57,13 @@ public class Movie implements Serializable {
         this.genre = genre;
     }
 
-    // Getter and Setter for releaseYear
+    // Getter and Setter for release_year
     public int getReleaseYear() {
         return release_year;
     }
 
-    public void setReleaseYear(int releaseYear) {
-        this.release_year = releaseYear;
+    public void setReleaseYear(int release_year) {
+        this.release_year = release_year;
     }
 
     // Getter and Setter for description

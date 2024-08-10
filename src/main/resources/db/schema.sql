@@ -1,13 +1,13 @@
 -- Drop the 'movies' table if it exists
 DROP TABLE IF EXISTS movies;
-
 -- Create a new 'movies' table
+
 CREATE TABLE movies (
-                                      id INTEGER PRIMARY KEY AUTOINCREMENT,
-                                      title TEXT NOT NULL,
-                                      release_year INTEGER NOT NULL,
-                                      genre TEXT NOT NULL,
-                                      description TEXT NOT NULL
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,  -- SQLite uses INTEGER for autoincrement
+                        title TEXT NOT NULL,
+                        release_year INTEGER NOT NULL,
+                        genre TEXT NOT NULL,
+                        description TEXT NOT NULL
 );
 
 -- Drop the 'users' table if it exists

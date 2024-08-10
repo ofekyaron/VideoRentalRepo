@@ -6,7 +6,7 @@ INSERT INTO movies (id, title, release_year, genre, description) VALUES
 
 
 -- Insert initial data into users table
-INSERT INTO users (id, username, password, email, role) VALUES
+INSERT INTO users (id, username, password, email, roles) VALUES
                                                          (1, 'ofek', '123', 'ofek@example.com', 'ROLE_USER'),
                                                          (2, 'matan', 'aaa', 'matan@example.com', 'ROLE_USER'),
                                                          (3, 'admin', 'password123', 'admin@example.com', 'ROLE_ADMIN');
