@@ -1,56 +1,26 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Place Order</title>
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <title>Place Order - Video Rental System</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
 </head>
 <body>
-<h1>Place Order</h1>
-<div id="orderDetails"></div>
+<div class="container mt-5">
+    <h2>Place Order</h2>
+    <div th:if="${movie != null}">
+        <h3 th:text="${movie.title}"></h3>
+        <p><strong>Genre:</strong> <span th:text="${movie.genre}"></span></p>
+        <p><strong>Release Year:</strong> <span th:text="${movie.releaseYear}"></span></p>
 
-<script>
-        function getUrlParams() {
-            const params = new URLSearchParams(window.location.search);
-            return {
-                userId: params.get('userId'),
-                movieId: params.get('movieId')
-            };
-        }
-
-        function placeOrder() {
-            const { userId, movieId } = getUrlParams();
-            axios.post('/api/orders/rent', null, { params: { userId, movieId } })
-                .then(function (response) {
-                    alert('Order placed successfully!');
-                    window.location.href = 'order-history.html?userId=' + userId;
-                })
-                .catch(function (error) {
-                    console.error('Error placing order:', error);
-                    alert('Failed to place order. Please try again.');
-                });
-        }
-
-        function loadMovieDetails() {
-            const { movieId } = getUrlParams();
-            axios.get(`/api/movies/${movieId}`)
-                .then(function (response) {
-                    const movie = response.data;
-                    document.getElementById('orderDetails').innerHTML = `
-                        <h2>${movie.title}</h2>
-                        <p>Genre: ${movie.genre}</p>
-                        <p>Release Year: ${movie.releaseYear}</p>
-                        <p>${movie.description}</p>
-                        <button onclick="placeOrder()">Confirm Rental</button>
-                    `;
-                })
-                .catch(function (error) {
-                    console.error('Error loading movie details:', error);
-                });
-        }
-
-        loadMovieDetails();
-    </script>
+        <form th:action="@{/orders/place}" method="post">
+            <input type="hidden" name="movieId" th:value="${movie.id}">
+            <button type="submit" class="btn btn-primary">Confirm Rental</button>
+        </form>
+    </div>
+    <div th:unless="${movie != null}">
+        <p>Sorry, the selected movie is not available for rental.</p>
+    </div>
+    <a th:href="@{/movies}" class="btn btn-secondary mt-3">Back to Movie List</a>
+</div>
 </body>
 </html>

@@ -11,13 +11,14 @@ public class Movie implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", columnDefinition = "INTEGER")
-    private Long id;
+    private Integer id;
     private String title;
     private String genre;
     private int release_year;
     private String description;
     @Column(name = "available")
     private boolean available = true;
+
 
     // Default constructor
     public Movie() {
@@ -36,7 +37,7 @@ public class Movie implements Serializable {
         return Math.toIntExact(id);
     }
 
-    public void setId(Long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -114,4 +115,5 @@ public class Movie implements Serializable {
     public int hashCode() {
         return id != null ? id.hashCode() : 0;
     }
+
 }

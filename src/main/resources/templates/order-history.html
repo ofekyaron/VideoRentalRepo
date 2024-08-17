@@ -1,52 +1,35 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Order History</title>
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <title>Order History - Video Rental System</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
 </head>
 <body>
-<h1>Order History</h1>
-<div id="orderList"></div>
-
-<script>
-        function loadOrders() {
-            const userId = new URLSearchParams(window.location.search).get('userId');
-            axios.get(`/api/orders/user/${userId}`)
-                .then(function (response) {
-                    const orders = response.data;
-                    const orderList = document.getElementById('orderList');
-                    orderList.innerHTML = '';
-                    orders.forEach(function(order) {
-                        orderList.innerHTML += `
-                            <div>
-                                <h2>${order.movie.title}</h2>
-                                <p>Order Date: ${new Date(order.orderDate).toLocaleString()}</p>
-                                <p>Return Date: ${order.returnDate ? new Date(order.returnDate).toLocaleString() : 'Not returned yet'}</p>
-                                ${!order.returnDate ? `<button onclick="returnMovie(${order.id})">Return Movie</button>` : ''}
-                            </div>
-                        `;
-                    });
-                })
-                .catch(function (error) {
-                    console.error('Error loading orders:', error);
-                });
-        }
-
-        function returnMovie(orderId) {
-            axios.post(`/api/orders/${orderId}/return`)
-                .then(function (response) {
-                    alert('Movie returned successfully!');
-                    loadOrders();
-                })
-                .catch(function (error) {
-                    console.error('Error returning movie:', error);
-                    alert('Failed to return movie. Please try again.');
-                });
-        }
-
-        loadOrders();
-    </script>
+<div class="container mt-5">
+    <h2>My Order History</h2>
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Order ID</th>
+            <th>Movie Title</th>
+            <th>Order Date</th>
+            <th>Return Date</th>
+            <th>Status</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="order : ${orders}">
+            <td th:text="${order.id}"></td>
+            <td th:text="${order.getMovieId()}"></td>
+            <td th:text="${#temporals.format(order.orderDate, 'yyyy-MM-dd HH:mm')}"></td>
+            <td th:text="${order.returnDate != null ? #temporals.format(order.returnDate, 'yyyy-MM-dd HH:mm') : 'Not returned'}"></td>
+            <td>
+                <span th:if="${order.returnDate == null}" class="text-warning">Active</span>
+                <span th:unless="${order.returnDate == null}" class="text-success">Returned</span>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
 </body>
 </html>

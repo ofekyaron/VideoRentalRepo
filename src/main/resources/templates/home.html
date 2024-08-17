@@ -1,12 +1,20 @@
-<!-- home.xhtml or home.html -->
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Home</title>
+    <title>Video Rental System - Home</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
 </head>
 <body>
-<h2>Welcome Home</h2>
-<p>You are logged in.</p>
-<a th:href="@{/logout}">Logout</a>
+<div class="container mt-5">
+    <h1>Welcome to Video Rental System</h1>
+    <nav>
+        <ul class="nav">
+            <li class="nav-item"><a class="nav-link" th:href="@{/movies}">Browse Movies</a></li>
+            <li class="nav-item"><a class="nav-link" th:href="@{/orders}">My Orders</a></li>
+            <li class="nav-item"><a class="nav-link" th:href="@{/login}">Login</a></li>
+            <li class="nav-item"><a class="nav-link" th:href="@{/logout}">Logout</a></li>
+        </ul>
+    </nav>
+</div>
 </body>
 </html>

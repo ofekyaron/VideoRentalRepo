@@ -2,6 +2,8 @@ package com.example.VideoRentalNew.service;
 
 import com.example.VideoRentalNew.dao.MovieDAO;
 import com.example.VideoRentalNew.model.Movie;
+import com.example.VideoRentalNew.repository.MovieRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.sql.SQLException;
@@ -11,10 +13,13 @@ import java.util.List;
 public class MovieService {
 
     private MovieDAO movieDAO;
+    private final MovieRepository movieRepository;
 
-    // Constructor to initialize the DAO
-    public MovieService() {
-        this.movieDAO = new MovieDAO(); // Initialize DAO
+
+    @Autowired
+    public MovieService(MovieDAO movieDAO, MovieRepository movieRepository) {
+        this.movieDAO = movieDAO;
+        this.movieRepository = movieRepository;
     }
 
     // Method to add a new movie
@@ -36,7 +41,7 @@ public class MovieService {
     }
 
     // Method to get a movie by IDdeleteMovie
-    public Movie getMovieById(Long id) throws SQLException {
+    public Movie getMovieById(Integer id) throws SQLException {
         return movieDAO.getMovieById(id);
     }
 
@@ -50,7 +55,7 @@ public class MovieService {
     }
 
     // Method to delete a movie by ID
-    public void deleteMovie(Long id) throws SQLException {
+    public void deleteMovie(Integer id) throws SQLException {
         // Delete movie using DAO
         movieDAO.deleteMovie(id);
     }
@@ -62,4 +67,11 @@ public class MovieService {
         }
         // Additional validation can be added here
     }
+
+    public List<Movie> searchMovies(String query) throws SQLException {
+        // Implement search logic here
+        // This is a basic example; you might want to make this more sophisticated
+        return movieDAO.searchMovies(query);
+    }
+
 }

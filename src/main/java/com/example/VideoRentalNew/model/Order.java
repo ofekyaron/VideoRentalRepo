@@ -6,18 +6,16 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "orders")
 public class Order {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", columnDefinition = "INTEGER")
-    private Long id;
+    private Integer id;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    @JoinColumn(name = "user_id", nullable = false) // Maps user_id to User entity
+    private Integer userId;
 
-    @ManyToOne
-    @JoinColumn(name = "movie_id", nullable = false)
-    private Movie movie;
+    @JoinColumn(name = "movie_id", nullable = false) // Maps movie_id to Movie entity
+    private Integer movieId;
 
     @Column(name = "order_date", nullable = false)
     private LocalDateTime orderDate;
@@ -26,39 +24,37 @@ public class Order {
     private LocalDateTime returnDate;
 
     // Constructors
-
     public Order() {}
 
-    public Order(User user, Movie movie) {
-        this.user = user;
-        this.movie = movie;
-        this.orderDate = LocalDateTime.now();
+    public Order(Integer userId, Integer movieId, LocalDateTime orderDate) {
+        this.userId = userId;
+        this.movieId = movieId;
+        this.orderDate = orderDate;
     }
 
-    // Getters and setters
-
-    public Long getId() {
+    // Getters and Setters
+    public Integer getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
-    public User getUser() {
-        return user;
+    public Integer getUser() {
+        return userId;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setUser(int userId) {
+        this.userId = userId;
     }
 
-    public Movie getMovie() {
-        return movie;
+    public Integer getMovieId() {
+        return movieId;
     }
 
-    public void setMovie(Movie movie) {
-        this.movie = movie;
+    public void setMovie(Integer movieId) {
+        this.movieId = movieId;
     }
 
     public LocalDateTime getOrderDate() {
@@ -77,5 +73,8 @@ public class Order {
         this.returnDate = returnDate;
     }
 
-    // ... any additional methods ...
+
+
+
+    // You might want to add toString(), equals(), and hashCode() methods
 }

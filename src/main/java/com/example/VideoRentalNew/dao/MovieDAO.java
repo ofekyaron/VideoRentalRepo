@@ -1,170 +1,72 @@
 package com.example.VideoRentalNew.dao;
 
 import com.example.VideoRentalNew.model.Movie;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.stereotype.Repository;
 
-import java.sql.*;
-import java.util.ArrayList;
+import javax.sql.DataSource;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 
+@Repository
 public class MovieDAO {
 
-    private final String url = "jdbc:sqlite:src/main/resources/db/video_rental.db";
+    private JdbcTemplate jdbcTemplate;
 
-    // Method to update a movie
-    public void updateMovie(Movie movie) throws SQLException {
+    @Autowired
+    public void setDataSource(DataSource dataSource) {
+        this.jdbcTemplate = new JdbcTemplate(dataSource);
+    }
+
+    private RowMapper<Movie> movieRowMapper = (ResultSet rs, int rowNum) -> {
+        Movie movie = new Movie();
+        movie.setId(rs.getInt("id"));
+        movie.setTitle(rs.getString("title"));
+        movie.setGenre(rs.getString("genre"));
+        movie.setReleaseYear(rs.getInt("release_year"));
+        movie.setDescription(rs.getString("description"));
+        movie.setAvailable(rs.getBoolean("available"));
+        return movie;
+    };
+
+    public void updateMovie(Movie movie) {
         String sql = "UPDATE movies SET title = ?, genre = ?, release_year = ?, description = ?, available = ? WHERE id = ?";
-        try (Connection conn = DriverManager.getConnection(url);
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setString(1, movie.getTitle());
-            pstmt.setString(2, movie.getGenre());
-            pstmt.setInt(3, movie.getReleaseYear());
-            pstmt.setString(4, movie.getDescription());
-            pstmt.setBoolean(5, movie.isAvailable());
-            pstmt.setLong(6, movie.getId());
-            pstmt.executeUpdate();
-        }
+        jdbcTemplate.update(sql, movie.getTitle(), movie.getGenre(), movie.getReleaseYear(),
+                movie.getDescription(), movie.isAvailable(), movie.getId());
     }
 
-    // Method to delete a movie by ID
-    public void deleteMovie(int id) throws SQLException {
+    public void deleteMovie(Integer id) {
         String sql = "DELETE FROM movies WHERE id = ?";
-        try (Connection conn = DriverManager.getConnection(url);
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setInt(1, id);
-            pstmt.executeUpdate();
-        }
+        jdbcTemplate.update(sql, id);
     }
 
-    // Method to add a new movie
-    public void addMovie(Movie movie) throws SQLException {
+    public void addMovie(Movie movie) {
         String sql = "INSERT INTO movies (title, genre, release_year, description, available) VALUES (?, ?, ?, ?, ?)";
-
-        try (Connection conn = DriverManager.getConnection(url);
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-
-            pstmt.setString(1, movie.getTitle());
-            pstmt.setString(2, movie.getGenre());
-            pstmt.setInt(3, movie.getReleaseYear());
-            pstmt.setString(4, movie.getDescription());
-            pstmt.setBoolean(5, movie.isAvailable());
-
-            pstmt.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-            throw e;
-        }
+        jdbcTemplate.update(sql, movie.getTitle(), movie.getGenre(), movie.getReleaseYear(),
+                movie.getDescription(), movie.isAvailable());
     }
 
-    // Method to get a movie by ID
-    public Movie getMovieById(int id) throws SQLException {
-        Movie movie = null;
+    public Movie getMovieById(Integer id) {
         String sql = "SELECT * FROM movies WHERE id = ?";
-
-        try (Connection conn = DriverManager.getConnection(url);
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-
-            pstmt.setInt(1, id);
-            try (ResultSet rs = pstmt.executeQuery()) {
-                if (rs.next()) {
-                    movie = new Movie();
-                    movie.setId(rs.getLong("id"));
-                    movie.setTitle(rs.getString("title"));
-                    movie.setGenre(rs.getString("genre"));
-                    movie.setReleaseYear(rs.getInt("release_year"));
-                    movie.setDescription(rs.getString("description"));
-                    movie.setAvailable(rs.getBoolean("available"));
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            throw e;
-        }
-
-        return movie;
+        return jdbcTemplate.queryForObject(sql, new Object[]{id}, movieRowMapper);
     }
 
-    // Method to get all movies
-    public List<Movie> getAllMovies() throws SQLException {
-        List<Movie> movies = new ArrayList<>();
+    public List<Movie> getAllMovies() {
         String sql = "SELECT * FROM movies";
-
-        try (Connection conn = DriverManager.getConnection(url);
-             PreparedStatement pstmt = conn.prepareStatement(sql);
-             ResultSet rs = pstmt.executeQuery()) {
-
-            while (rs.next()) {
-                Movie movie = new Movie();
-                movie.setId(rs.getLong("id"));
-                movie.setTitle(rs.getString("title"));
-                movie.setGenre(rs.getString("genre"));
-                movie.setReleaseYear(rs.getInt("release_year"));
-                movie.setDescription(rs.getString("description"));
-                movie.setAvailable(rs.getBoolean("available"));
-                movies.add(movie);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            throw e;
-        }
-
-        return movies;
+        return jdbcTemplate.query(sql, movieRowMapper);
     }
 
-    public List<Movie> getAvailableMovies() throws SQLException {
-        List<Movie> movies = new ArrayList<>();
+    public List<Movie> getAvailableMovies() {
         String sql = "SELECT * FROM movies WHERE available = TRUE";
-
-        try (Connection conn = DriverManager.getConnection(url);
-             PreparedStatement pstmt = conn.prepareStatement(sql);
-             ResultSet rs = pstmt.executeQuery()) {
-
-            while (rs.next()) {
-                Movie movie = new Movie();
-                movie.setId(rs.getLong("id"));
-                movie.setTitle(rs.getString("title"));
-                movie.setGenre(rs.getString("genre"));
-                movie.setReleaseYear(rs.getInt("release_year"));
-                movie.setDescription(rs.getString("description"));
-                movie.setAvailable(rs.getBoolean("available"));
-                movies.add(movie);
-            }
-        }
-
-        return movies;
+        return jdbcTemplate.query(sql, movieRowMapper);
     }
 
-    // Update other methods to use Long instead of int for IDs
-    public Movie getMovieById(Long id) throws SQLException {
-        Movie movie = null;
-        String sql = "SELECT * FROM movies WHERE id = ?";
-
-        try (Connection conn = DriverManager.getConnection(url);
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-
-            pstmt.setLong(1, id);
-            try (ResultSet rs = pstmt.executeQuery()) {
-                if (rs.next()) {
-                    movie = new Movie();
-                    movie.setId(rs.getLong("id"));
-                    movie.setTitle(rs.getString("title"));
-                    movie.setGenre(rs.getString("genre"));
-                    movie.setReleaseYear(rs.getInt("release_year"));
-                    movie.setDescription(rs.getString("description"));
-                    movie.setAvailable(rs.getBoolean("available"));
-                }
-            }
-        }
-
-        return movie;
+    public List<Movie> searchMovies(String query) {
+        String sql = "SELECT * FROM movies WHERE LOWER(title) LIKE ? OR LOWER(genre) LIKE ? OR LOWER(description) LIKE ?";
+        String searchTerm = "%" + query.toLowerCase() + "%";
+        return jdbcTemplate.query(sql, new Object[]{searchTerm, searchTerm, searchTerm}, movieRowMapper);
     }
-
-    public void deleteMovie(Long id) throws SQLException {
-        String sql = "DELETE FROM movies WHERE id = ?";
-        try (Connection conn = DriverManager.getConnection(url);
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setLong(1, id);
-            pstmt.executeUpdate();
-        }
-    }
-
 }
