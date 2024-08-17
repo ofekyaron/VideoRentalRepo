@@ -12,9 +12,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
-import org.springframework.stereotype.Indexed;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -42,10 +42,10 @@ public class OrderController {
         if (user != null) {
             List<Order> orders = orderService.getOrdersByUser(user.getId());
             model.addAttribute("orders", orders);
-            return "order-history"; // Match the template name in your Thymeleaf folder
+            return "order-history"; // Ensure this Thymeleaf template exists
         } else {
             model.addAttribute("error", "User not found");
-            return "error";
+            return "error"; // Ensure this Thymeleaf template exists
         }
     }
 
@@ -57,19 +57,22 @@ public class OrderController {
     }
 
     @PostMapping
-    @ResponseBody
-    public ResponseEntity<Order> placeOrder(@RequestParam Integer userId, @RequestParam Integer movieId) throws SQLException {
+    public String placeOrder(@RequestParam Integer userId, @RequestParam Integer movieId, Model model) {
         try {
             Order order = orderService.placeOrder(userId, movieId);
-            return new ResponseEntity<>(order, HttpStatus.CREATED);
+            model.addAttribute("order", order);
+            return "order-success"; // Ensure this Thymeleaf template exists
         } catch (RuntimeException e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            model.addAttribute("error", "Unable to place order");
+            return "order-error"; // Ensure this Thymeleaf template exists
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
     }
 
     @GetMapping("/{id}")
     @ResponseBody
-    public ResponseEntity<Order> getOrderDetails(Integer id) {
+    public ResponseEntity<Order> getOrderDetails(@PathVariable Integer id) {
         Order order = orderService.getOrderById(id);
         if (order != null) {
             return new ResponseEntity<>(order, HttpStatus.OK);
@@ -79,22 +82,75 @@ public class OrderController {
     }
 
     @PostMapping("/{id}/return")
-    @ResponseBody
-    public ResponseEntity<Void> returnMovie(@PathVariable Integer id) {
+    public String returnMovie(@PathVariable Integer id, RedirectAttributes redirectAttributes) {
         try {
             orderService.returnMovie(id);
-            return new ResponseEntity<>(HttpStatus.OK);
+            redirectAttributes.addFlashAttribute("message", "Return succeeded");
+            return "redirect:/orders/confirmation";
         } catch (IllegalStateException | SQLException e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            redirectAttributes.addFlashAttribute("error", "Unable to return movie");
+            return "redirect:/orders";
         }
     }
 
+
     @GetMapping("/place")
     public String showPlaceOrderForm(@RequestParam Integer movieId, Model model) throws SQLException {
-        Movie movie = movieService.getMovieById(movieId);
-        if (movie != null && movie.isAvailable()) {
-            model.addAttribute("movie", movie);
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String username = auth.getName();
+        User user = userService.findByUsername(username);
+
+        if (user != null) {
+            Movie movie = movieService.getMovieById(movieId);
+            if (movie != null && movie.isAvailable()) {
+                model.addAttribute("movie", movie);
+                model.addAttribute("currentUser", user);
+                return "place-order"; // Ensure this Thymeleaf template exists
+            }
         }
-        return "place-order";
+        model.addAttribute("error", "Movie not available or user not found");
+        return "error"; // Ensure this Thymeleaf template exists
+    }
+
+    @PostMapping("/place")
+    public String handlePlaceOrder(@RequestParam Integer movieId, Model model) throws SQLException {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String username = auth.getName();
+        User user = userService.findByUsername(username);
+        if (user != null) {
+            try {
+                Order order = orderService.placeOrder(user.getId(), movieId);
+                model.addAttribute("order", order);
+                return "redirect:/orders/confirmation"; // Ensure this redirect URL is handled properly
+            } catch (RuntimeException e) {
+                model.addAttribute("error", "Failed to place the order");
+                return "place-order"; // Ensure this Thymeleaf template exists
+            }
+        } else {
+            model.addAttribute("error", "User not found");
+            return "error"; // Ensure this Thymeleaf template exists
+        }
+    }
+
+    @GetMapping("/confirmation")
+    public String showOrderConfirmation(Model model) {
+        // Add any additional logic needed for the confirmation page
+        return "order-confirmation"; // Ensure this Thymeleaf template exists
+    }
+
+    @GetMapping("/search")
+    public String searchMovies(@RequestParam(required = false) String genre,
+                               @RequestParam(required = false) String keywords,
+                               Model model) {
+        List<Movie> movies;
+        if (genre != null && !genre.isEmpty()) {
+            movies = movieService.searchMoviesByGenre(genre);
+        } else if (keywords != null && !keywords.isEmpty()) {
+            movies = movieService.searchMoviesByKeywords(keywords);
+        } else {
+            movies = movieService.findAll(); // Default to show all movies
+        }
+        model.addAttribute("movies", movies);
+        return "movie-list"; // Your Thymeleaf template
     }
 }

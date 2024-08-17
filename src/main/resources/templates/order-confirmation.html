@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Order Confirmation</title>
+    <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+<header>
+    <h1>Order Confirmation</h1>
+</header>
+<main>
+    <!-- Display return success message -->
+    <div class="confirmation-message" th:if="${message}">
+        <h2>Return Successful</h2>
+        <p th:text="${message}"></p>
+    </div>
+
+    <!-- Display error message if there was an issue with the return -->
+    <div class="confirmation-message" th:if="${error}">
+        <h2>Return Failed</h2>
+        <p th:text="${error}"></p>
+    </div>
+
+    <!-- Optional: Display order details if needed -->
+    <div class="order-details" th:if="${order}">
+        <h3>Order Details:</h3>
+        <p>Order ID: <span th:text="${order.id}"></span></p>
+        <p>Movie: <span th:text="${order.movie.title}"></span></p>
+        <p>User: <span th:text="${order.user.username}"></span></p>
+        <p>Order Date: <span th:text="${#temporals.format(order.orderDate, 'yyyy-MM-dd HH:mm')}"></span></p>
+        <p>Return Date: <span th:text="${order.returnDate != null ? #temporals.format(order.returnDate, 'yyyy-MM-dd HH:mm') : 'Not returned'}"></span></p>
+        <!-- Add other relevant order details here -->
+    </div>
+
+    <!-- Optional: Provide links for further actions -->
+    <div class="additional-links">
+        <a href="/orders">View your orders</a>
+        <a href="/movies">Browse more movies</a>
+    </div>
+</main>
+<footer>
+    <p>&copy; 2024 Video Rental Application. All rights reserved.</p>
+</footer>
+</body>
+</html>

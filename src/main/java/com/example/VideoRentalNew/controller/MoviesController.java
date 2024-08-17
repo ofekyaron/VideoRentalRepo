@@ -19,58 +19,6 @@ public class MoviesController {
     @Autowired
     private MovieService movieService;
 
-    @GetMapping
-    public String listMovies(Model model) {
-        try {
-            List<Movie> movies = movieService.getAllMovies();
-            model.addAttribute("movies", movies);
-            return "movie-list";
-        } catch (SQLException e) {
-            model.addAttribute("error", "An error occurred while fetching movies.");
-            return "error";
-        }
-    }
-
-    // Existing REST endpoints
-    @GetMapping("/api")
-    @ResponseBody
-    public ResponseEntity<List<Movie>> getAllMovies() {
-        try {
-            List<Movie> movies = movieService.getAllMovies();
-            return new ResponseEntity<>(movies, HttpStatus.OK);
-        } catch (SQLException e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    // ... other existing REST endpoints ...
-
-    // New methods for web interface
-    @GetMapping("/browse")
-    public String browseMovies(Model model) {
-        try {
-            List<Movie> movies = movieService.getAllMovies();
-            model.addAttribute("movies", movies);
-            return "browse";
-        } catch (SQLException e) {
-            model.addAttribute("error", "An error occurred while fetching movies.");
-            return "error";
-        }
-    }
-
-    @GetMapping("/search")
-    public String searchMovies(@RequestParam String query, Model model) {
-        try {
-            List<Movie> movies = movieService.searchMovies(query);
-            model.addAttribute("movies", movies);
-            model.addAttribute("searchQuery", query);
-            return "search";
-        } catch (SQLException e) {
-            model.addAttribute("error", "An error occurred while searching for movies.");
-            return "error";
-        }
-    }
-
     // You might want to add a method to handle movie details
     @GetMapping("/{id}")
     public String getMovieDetails(@PathVariable("id") Integer id, Model model) {
@@ -88,4 +36,42 @@ public class MoviesController {
             return "error";
         }
     }
+
+    @Autowired
+    public MoviesController(MovieService movieService) {
+        this.movieService = movieService;
+    }
+
+    @GetMapping
+    public String listMovies(Model model) {
+        List<Movie> movies = movieService.getAllMovies();
+        model.addAttribute("movies", movies);
+        return "movie-list";
+    }
+
+    @GetMapping("/search")
+    public String searchMovies(
+            @RequestParam(value = "genre", required = false) String genre,
+            @RequestParam(value = "keywords", required = false) String keywords,
+            Model model) {
+        try {
+            List<Movie> movies;
+            if (genre != null && keywords != null) {
+                movies = movieService.searchMovies(genre, keywords);
+            } else if (keywords != null) {
+                movies = movieService.searchMovies(keywords);
+            } else {
+                movies = movieService.getAllMovies(); // Or handle case where no parameters are provided
+            }
+            model.addAttribute("movies", movies);
+            model.addAttribute("genre", genre);
+            model.addAttribute("keywords", keywords);
+            return "movie-list";
+        } catch (SQLException e) {
+            model.addAttribute("error", "An error occurred while searching for movies.");
+            return "error";
+        }
+    }
+
+
 }

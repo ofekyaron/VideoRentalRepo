@@ -15,6 +15,7 @@
             <th>Order Date</th>
             <th>Return Date</th>
             <th>Status</th>
+            <th>Action</th>
         </tr>
         </thead>
         <tbody>
@@ -26,6 +27,12 @@
             <td>
                 <span th:if="${order.returnDate == null}" class="text-warning">Active</span>
                 <span th:unless="${order.returnDate == null}" class="text-success">Returned</span>
+            </td>
+            <td>
+                <!-- Add a return button if the movie has not been returned -->
+                <form th:action="@{/orders/{id}/return(id=${order.id})}" method="post">
+                    <button type="submit" class="btn btn-danger" th:if="${order.returnDate == null}">Return Movie</button>
+                </form>
             </td>
         </tr>
         </tbody>

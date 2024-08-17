@@ -69,4 +69,6 @@ public class MovieDAO {
         String searchTerm = "%" + query.toLowerCase() + "%";
         return jdbcTemplate.query(sql, new Object[]{searchTerm, searchTerm, searchTerm}, movieRowMapper);
     }
+
+
 }

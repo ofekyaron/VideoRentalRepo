@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container mt-5">
+    <h2>Order Placed Successfully!</h2>
+    <p>Thank you for your rental. Your order details:</p>
+    <ul>
+        <li><strong>Order ID:</strong> <span th:text="${order.id}"></span></li>
+        <li><strong>Movie ID:</strong> <span th:text="${order.movieId}"></span></li>
+        <li><strong>Order Date:</strong> <span th:text="${order.orderDate}"></span></li>
+    </ul>
+    <a th:href="@{/orders}" class="btn btn-primary mt-3">Back to Orders</a>
+</div>
+</body>
+</html>

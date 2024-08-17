@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Place Order - Video Rental System</title>
+    <a href="/orders/place?movieId=${movie.id}">Place Order</a>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
 </head>
 <body>
@@ -16,6 +16,7 @@
             <input type="hidden" name="movieId" th:value="${movie.id}">
             <button type="submit" class="btn btn-primary">Confirm Rental</button>
         </form>
+
     </div>
     <div th:unless="${movie != null}">
         <p>Sorry, the selected movie is not available for rental.</p>

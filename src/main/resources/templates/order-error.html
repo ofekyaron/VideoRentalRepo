@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container mt-5">
+    <h2>Order Failed</h2>
+    <p th:text="${error}"></p>
+    <a th:href="@{/orders}" class="btn btn-secondary mt-3">Back to Orders</a>
+</div>
+</body>
+</html>

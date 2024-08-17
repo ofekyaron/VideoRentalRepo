@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class MovieService {
@@ -29,11 +30,6 @@ public class MovieService {
 
         // Add movie using DAO
         movieDAO.addMovie(movie);
-    }
-
-    // Method to get all movies
-    public List<Movie> getAllMovies() throws SQLException {
-        return movieDAO.getAllMovies();
     }
 
     public List<Movie> getAvailableMovies() throws SQLException {
@@ -74,4 +70,35 @@ public class MovieService {
         return movieDAO.searchMovies(query);
     }
 
+    public List<Movie> searchMoviesByGenre(String genre) {
+        return movieRepository.findByGenre(genre);
+    }
+
+    public List<Movie> searchMoviesByKeywords(String keywords) {
+        return movieRepository.findByTitleContainingIgnoreCase(keywords);
+    }
+
+    public List<Movie> findAll() {
+        return movieRepository.findAll();
+    }
+
+    public List<Movie> getAllMovies() {
+        return movieRepository.findAll();
+    }
+
+    public List<Movie> searchMovies(String genre, String keywords) {
+        List<Movie> movies = movieRepository.findAll();
+        if (genre != null && !genre.isEmpty()) {
+            movies = movies.stream()
+                    .filter(movie -> movie.getGenre().toLowerCase().contains(genre.toLowerCase()))
+                    .collect(Collectors.toList());
+        }
+        if (keywords != null && !keywords.isEmpty()) {
+            movies = movies.stream()
+                    .filter(movie -> movie.getTitle().toLowerCase().contains(keywords.toLowerCase()))
+                    .collect(Collectors.toList());
+        }
+        return movies;
+    }
 }
+

@@ -7,6 +7,21 @@
 <body>
 <div class="container mt-5">
     <h2>Available Movies</h2>
+
+    <!-- Search Form -->
+    <form th:action="@{/movies/search}" method="get" class="mb-4">
+        <div class="form-group">
+            <label for="genre">Search by Genre:</label>
+            <input type="text" id="genre" name="genre" class="form-control" placeholder="Enter genre" th:value="${param.genre}">
+        </div>
+        <div class="form-group">
+            <label for="keywords">Search by Keywords:</label>
+            <input type="text" id="keywords" name="keywords" class="form-control" placeholder="Enter keywords" th:value="${param.keywords}">
+        </div>
+        <button type="submit" class="btn btn-primary">Search</button>
+    </form>
+
+    <!-- Movie List -->
     <table class="table">
         <thead>
         <tr>
