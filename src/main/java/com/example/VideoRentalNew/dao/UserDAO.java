@@ -12,7 +12,7 @@ public class UserDAO {
     private final String url = "jdbc:sqlite:src/main/resources/db/video_rental.db";
 
     public void addUser(User user) throws SQLException {
-        String sql = "INSERT INTO users (username, password, email, role) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO users (username, password, email, roles) VALUES (?, ?, ?, ?)";
         try (Connection conn = DriverManager.getConnection(url);
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, user.getUsername());
@@ -35,7 +35,7 @@ public class UserDAO {
                     user.setUsername(rs.getString("username"));
                     user.setPassword(rs.getString("password"));
                     user.setEmail(rs.getString("email"));
-                    user.setRoles(rs.getString("role"));
+                    user.setRoles(rs.getString("roles"));
                     return Optional.of(user);
                 }
             }

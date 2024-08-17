@@ -44,12 +44,6 @@ public class AdminController {
         return "admin/new-movie";
     }
 
-//    @PostMapping("/movies/add")
-//    public String addMovie(@ModelAttribute Movie movie) throws SQLException {
-//        movieService.saveMovie(movie);
-//        return "redirect:/admin/dashboard";  // Redirect to dashboard instead of /admin/movies
-//    }
-
     @GetMapping("/movies")
     public String listMovies(Model model) {
         List<Movie> movies = movieService.getAllMovies();
@@ -68,7 +62,48 @@ public class AdminController {
     public String listUsers(Model model) {
         List<User> users = userService.getAllUsers();
         model.addAttribute("users", users);
-        return "admin/users";  // Create a new Thymeleaf template for listing movies
+        return "admin/users";
+    }
+
+    @PostMapping("/users/add")
+    public String addUser(@ModelAttribute User user, @RequestParam String role, RedirectAttributes redirectAttributes) {
+        try {
+            user.addRole(role);  // Add the selected role to the user
+            userService.saveUser(user);
+            redirectAttributes.addFlashAttribute("successMessage", "User '" + user.getUsername() + "' added successfully!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Failed to add user: " + e.getMessage());
+        }
+        return "redirect:/admin/users";
+    }
+
+    @GetMapping("/users/edit/{id}")
+    public String showEditUserForm(@PathVariable Integer id, Model model) {
+        User user = userService.getUserById(id);
+        model.addAttribute("user", user);
+        return "admin/edit-user";
+    }
+
+    @PostMapping("/users/edit/{id}")
+    public String updateUser(@PathVariable Integer id, @ModelAttribute User user, RedirectAttributes redirectAttributes) {
+        try {
+            userService.updateUser(id, user);
+            redirectAttributes.addFlashAttribute("successMessage", "User updated successfully!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Failed to update user: " + e.getMessage());
+        }
+        return "redirect:/admin/users";
+    }
+
+    @PostMapping("/users/delete/{id}")
+    public String deleteUser(@PathVariable Integer id, RedirectAttributes redirectAttributes) {
+        try {
+            userService.deleteUser(id);
+            redirectAttributes.addFlashAttribute("successMessage", "User deleted successfully!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Failed to delete user: " + e.getMessage());
+        }
+        return "redirect:/admin/users";
     }
 
     @GetMapping("/orders")
@@ -76,6 +111,17 @@ public class AdminController {
         List<Order> orders = orderService.getAllOrders();
         model.addAttribute("orders", orders);
         return "admin/orders";  // Create a new Thymeleaf template for listing movies
+    }
+
+    @PostMapping("/orders/{id}/return")
+    public String returnMovie(@PathVariable Integer id, RedirectAttributes redirectAttributes) {
+        try {
+            orderService.returnMovie(id);
+            redirectAttributes.addFlashAttribute("successMessage", "Movie returned successfully");
+        } catch (IllegalStateException | SQLException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Unable to return movie: " + e.getMessage());
+        }
+        return "redirect:/admin/orders";
     }
 
     // Add other admin-related methods here

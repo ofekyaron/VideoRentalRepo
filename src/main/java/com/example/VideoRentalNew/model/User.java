@@ -2,7 +2,6 @@ package com.example.VideoRentalNew.model;
 
 import jakarta.persistence.*;
 
-
 @Entity
 @Table(name = "users")
 public class User {
@@ -19,10 +18,21 @@ public class User {
     private String password;
 
     @Column(nullable = false)
-    private String roles;
+    private String email;
 
     @Column(nullable = false)
-    private String email;
+    private String roles;
+
+    // Constructors
+    public User() {
+    }
+
+    public User(String username, String password, String email, String roles) {
+        this.username = username;
+        this.password = password;
+        this.email = email;
+        this.roles = roles;
+    }
 
     // Getters and setters
     public Integer getId() {
@@ -39,10 +49,6 @@ public class User {
 
     public void setUsername(String username) {
         this.username = username;
-    }
-
-    public void setRoles(String roles) {
-        this.roles = roles;
     }
 
     public String getPassword() {
@@ -65,7 +71,15 @@ public class User {
         return roles;
     }
 
-    public enum Role {
-        USER, ADMIN
+    public void setRoles(String roles) {
+        this.roles = roles;
+    }
+
+    public void addRole(String role) {
+        if (this.roles == null || this.roles.isEmpty()) {
+            this.roles = role;
+        } else if (!this.roles.contains(role)) {
+            this.roles += "," + role;
+        }
     }
 }

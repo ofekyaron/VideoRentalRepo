@@ -1,37 +1,38 @@
 package com.example.VideoRentalNew.service;
 
 import com.example.VideoRentalNew.model.User;
-import com.example.VideoRentalNew.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
 
     @Autowired
-    private UserRepository userRepository;
+    private UserService userService;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
+        User user = userService.findByUsername(username);
+        if (user == null) {
+            throw new UsernameNotFoundException("User not found with username: " + username);
+        }
 
-        // Remove "ROLE_" prefix if it exists
-        String role = user.getRoles().startsWith("ROLE_")
-                ? user.getRoles().substring(5)
-                : user.getRoles();
+        List<GrantedAuthority> authorities = Arrays.stream(user.getRoles().split(","))
+                .map(role -> new SimpleGrantedAuthority("ROLE_" + role.trim()))
+                .collect(Collectors.toList());
 
-        return org.springframework.security.core.userdetails.User
-                .withUsername(user.getUsername())
-                .password(user.getPassword())
-                .roles(role) // Spring Security will add the "ROLE_" prefix
-                .build();
+        return new org.springframework.security.core.userdetails.User(
+                user.getUsername(),
+                user.getPassword(),
+                authorities);
     }
 }
