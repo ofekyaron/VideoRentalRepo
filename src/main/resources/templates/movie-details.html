@@ -1,19 +1,66 @@
-<!--<!DOCTYPE html>-->
-<!--<html xmlns:th="http://www.thymeleaf.org">-->
-<!--<head>-->
-<!--    <title>Movie Details - Video Rental System</title>-->
-<!--    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">-->
-<!--</head>-->
-<!--<body>-->
-<!--<div class="container mt-5">-->
-<!--    <h2 th:text="${movie.title}"></h2>-->
-<!--    <p><strong>Genre:</strong> <span th:text="${movie.genre}"></span></p>-->
-<!--    <p><strong>Release Year:</strong> <span th:text="${movie.releaseYear}"></span></p>-->
-<!--    <p><strong>Description:</strong> <span th:text="${movie.description}"></span></p>-->
-<!--    <p><strong>Available:</strong> <span th:text="${movie.available ? 'Yes' : 'No'}"></span></p>-->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
-<!--    <a th:if="${movie.available}" th:href="@{/orders/place(movieId=${movie.id})}" class="btn btn-primary">Rent This Movie</a>-->
-<!--    <a th:href="@{/movies}" class="btn btn-secondary">Back to Movie List</a>-->
-<!--</div>-->
-<!--</body>-->
-<!--</html>-->
+<head>
+    <title>Movie Details - Video Rental System</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .navbar {
+            background-color: #4a5561;
+        }
+        .navbar-brand {
+            font-weight: bold;
+            color: #ffffff !important;
+        }
+    </style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark">
+    <div class="container">
+        <a class="navbar-brand" href="/">Video Rental System</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/movies}">Browse Movies</a>
+                </li>
+                <li class="nav-item" sec:authorize="isAuthenticated()">
+                    <a class="nav-link" th:href="@{/orders}">My Orders</a>
+                </li>
+                <li class="nav-item" sec:authorize="!isAuthenticated()">
+                    <a class="nav-link" th:href="@{/login}">Login</a>
+                </li>
+                <li class="nav-item" sec:authorize="isAuthenticated()">
+                    <form th:action="@{/logout}" method="post">
+                        <button type="submit" class="btn btn-link nav-link">Logout</button>
+                    </form>
+                </li>
+                <li class="nav-item" sec:authorize="hasRole('ADMIN')">
+                    <a class="nav-link" th:href="@{/admin/dashboard}">Admin Dashboard</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+<div class="container mt-5">
+    <h2 th:text="${movie.title}"></h2>
+    <p><strong>Genre:</strong> <span th:text="${movie.genre}"></span></p>
+    <p><strong>Release Year:</strong> <span th:text="${movie.releaseYear}"></span></p>
+    <p><strong>Description:</strong> <span th:text="${movie.description}"></span></p>
+    <p><strong>Available:</strong> <span th:text="${movie.available ? 'Yes' : 'No'}"></span></p>
+
+    <a th:if="${movie.available}" th:href="@{/orders/place(movieId=${movie.id})}" class="btn btn-primary">Rent This Movie</a>
+    <a th:href="@{/movies}" class="btn btn-secondary">Back to Movie List</a>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+</body>
+</html>

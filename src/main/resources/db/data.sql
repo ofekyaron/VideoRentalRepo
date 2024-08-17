@@ -13,9 +13,9 @@ INSERT INTO movies (title, genre, release_year, description, available) VALUES
 
 -- Insert initial data into users table with encoded passwords
 INSERT INTO users (id, username, password, email, roles) VALUES
-(1, 'ofek', '$2a$10$abcdefghijklmnopqrstuvwxyz123456', 'ofek@example.com', 'USER'),
-(2, 'matan', '$2a$10$abcdefghijklmnopqrstuvwxyz789012', 'matan@example.com', 'USER'),
-(3, 'admin', '$2a$10$abcdefghijklmnopqrstuvwxyz345678', 'admin@example.com', 'ADMIN');
+(1, 'ofek', '$2a$10$abcdefghijklmnopqrstuvwxyz123456', 'ofek@example.com', 'ROLE_USER'),
+(2, 'matan', '$2a$10$abcdefghijklmnopqrstuvwxyz789012', 'matan@example.com', 'ROLE_USER'),
+(3, 'admin', '$2a$10$abcdefghijklmnopqrstuvwxyz345678', 'admin@example.com', 'ROLE_ADMIN');
 
 -- Sample data for orders table
 INSERT INTO orders (user_id, movie_id, order_date, return_date) VALUES

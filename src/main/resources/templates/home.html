@@ -44,7 +44,7 @@
                         <button type="submit" class="btn btn-link nav-link">Logout</button>
                     </form>
                 </li>
-                <li class="nav-item" sec:authorize="hasRole('ADMIN')">
+                <li class="nav-item" sec:authorize="hasRole('ROLE_ADMIN')">
                     <a class="nav-link" th:href="@{/admin/dashboard}">Admin Dashboard</a>
                 </li>
             </ul>
@@ -63,22 +63,22 @@
 </div>
 
 <div class="container mt-4">
-    <div class="row">
-        <div class="col-md-4">
-            <h2>Latest Releases</h2>
-            <p>Check out our newest additions to the movie collection.</p>
-            <a class="btn btn-secondary" th:href="@{/movies/latest}" role="button">View Latest &raquo;</a>
-        </div>
+<!--    <div class="row">-->
+<!--        <div class="col-md-4">-->
+<!--            <h2>Latest Releases</h2>-->
+<!--            <p>Check out our newest additions to the movie collection.</p>-->
+<!--            <a class="btn btn-secondary" th:href="@{/movies/latest}" role="button">View Latest &raquo;</a>-->
+<!--        </div>-->
 <!--        <div class="col-md-4">-->
 <!--            <h2>Top Rated</h2>-->
 <!--            <p>Explore the highest-rated movies in our catalog.</p>-->
 <!--            <a class="btn btn-secondary" th:href="@{/movies/top-rated}" role="button">View Top Rated &raquo;</a>-->
 <!--        </div>-->
-        <div class="col-md-4">
-            <h2>Genres</h2>
-            <p>Find movies by your favorite genres.</p>
-            <a class="btn btn-secondary" th:href="@{/movies/genres}" role="button">Browse Genres &raquo;</a>
-        </div>
+<!--        <div class="col-md-4">-->
+<!--            <h2>Genres</h2>-->
+<!--            <p>Find movies by your favorite genres.</p>-->
+<!--            <a class="btn btn-secondary" th:href="@{/movies/genres}" role="button">Browse Genres &raquo;</a>-->
+<!--        </div>-->
     </div>
 </div>
 

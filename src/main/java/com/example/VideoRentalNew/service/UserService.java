@@ -60,16 +60,19 @@ public class UserService {
         userRepository.save(user);
     }
 
-    public void updateUser(Integer id, User updatedUser) throws SQLException {
+    public void updateUser(Integer id, User updatedUser, String newPassword, String role) throws SQLException {
         User existingUser = getUserById(id);
         existingUser.setUsername(updatedUser.getUsername());
         existingUser.setEmail(updatedUser.getEmail());
-        if (updatedUser.getPassword() != null && !updatedUser.getPassword().isEmpty()) {
-            existingUser.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
+
+        if (newPassword != null && !newPassword.isEmpty()) {
+            existingUser.setPassword(passwordEncoder.encode(newPassword));
         }
-        if (updatedUser.getRoles() != null && !updatedUser.getRoles().isEmpty()) {
-            existingUser.setRoles(updatedUser.getRoles());
+
+        if (role != null && !role.isEmpty()) {
+            existingUser.setRoles(role);
         }
+
         userRepository.save(existingUser);
     }
 

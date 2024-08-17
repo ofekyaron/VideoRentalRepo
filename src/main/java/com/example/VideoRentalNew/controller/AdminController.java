@@ -7,9 +7,13 @@ import com.example.VideoRentalNew.service.MovieService;
 import com.example.VideoRentalNew.service.OrderService;
 import com.example.VideoRentalNew.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.sql.SQLException;
@@ -17,6 +21,7 @@ import java.util.List;
 
 @Controller
 @RequestMapping("/admin")
+@PreAuthorize("hasAuthority('ROLE_ADMIN')")
 public class AdminController {
 
     @Autowired
@@ -41,7 +46,7 @@ public class AdminController {
     @GetMapping("/movies/add")
     public String showAddMovieForm(Model model) {
         model.addAttribute("movie", new Movie());
-        return "admin/new-movie";
+        return "admin/movies";
     }
 
     @GetMapping("/movies")
@@ -55,7 +60,18 @@ public class AdminController {
     public String addMovie(@ModelAttribute Movie movie, RedirectAttributes redirectAttributes) throws SQLException {
         movieService.saveMovie(movie);
         redirectAttributes.addFlashAttribute("successMessage", "Movie added successfully!");
-        return "redirect:/admin/dashboard";
+        return "redirect:/admin/movies";
+    }
+
+    @PostMapping("/movies/delete/{id}")
+    public String deleteMovie(@PathVariable Integer id, RedirectAttributes redirectAttributes) throws SQLException {
+        try {
+            movieService.deleteMovie(id);
+            redirectAttributes.addFlashAttribute("successMessage", "Movie deleted successfully!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Failed to delete movie: " + e.getMessage());
+        }
+        return "redirect:/admin/movies";
     }
 
     @GetMapping("/users")
@@ -77,17 +93,30 @@ public class AdminController {
         return "redirect:/admin/users";
     }
 
+    @GetMapping("/users/{id}")
+    @ResponseBody
+    public ResponseEntity<User> getUserDetails(@PathVariable Integer id) {
+        User user = userService.getUserById(id);
+        if (user == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(user);
+    }
+
     @GetMapping("/users/edit/{id}")
     public String showEditUserForm(@PathVariable Integer id, Model model) {
         User user = userService.getUserById(id);
+        if (user == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
+        }
         model.addAttribute("user", user);
         return "admin/edit-user";
     }
 
     @PostMapping("/users/edit/{id}")
-    public String updateUser(@PathVariable Integer id, @ModelAttribute User user, RedirectAttributes redirectAttributes) {
+    public String updateUser(@PathVariable Integer id, @ModelAttribute User user, @RequestParam(required = false) String newPassword, @RequestParam String role, RedirectAttributes redirectAttributes) {
         try {
-            userService.updateUser(id, user);
+            userService.updateUser(id, user, newPassword, role);
             redirectAttributes.addFlashAttribute("successMessage", "User updated successfully!");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Failed to update user: " + e.getMessage());
@@ -123,6 +152,39 @@ public class AdminController {
         }
         return "redirect:/admin/orders";
     }
+
+    @GetMapping("/movies/{id}")
+    @ResponseBody
+    public ResponseEntity<Movie> getMovieDetails(@PathVariable Integer id) throws SQLException {
+        Movie movie = movieService.getMovieById(id);
+        if (movie == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(movie);
+    }
+
+    @PostMapping("/movies/edit/{id}")
+    public String updateMovie(@PathVariable Integer id, @ModelAttribute Movie movie, RedirectAttributes redirectAttributes) {
+        try {
+            movie.setId(id);  // Ensure the ID is set correctly
+            movieService.updateMovie(movie);
+            redirectAttributes.addFlashAttribute("successMessage", "Movie updated successfully!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Failed to update movie: " + e.getMessage());
+        }
+        return "redirect:/admin/movies";
+    }
+
+    @GetMapping("/movies/edit/{id}")
+    public String showEditMovieForm(@PathVariable Integer id, Model model) throws SQLException {
+        Movie movie = movieService.getMovieById(id);
+        if (movie == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Movie not found");
+        }
+        model.addAttribute("movie", movie);
+        return "admin/edit-movie";  // Create a new Thymeleaf template for editing movies
+    }
+
 
     // Add other admin-related methods here
 }

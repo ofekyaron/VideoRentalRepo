@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Set;
 
 @Controller
 @RequestMapping("/movies")
@@ -41,11 +42,32 @@ public class MoviesController {
     public MoviesController(MovieService movieService) {
         this.movieService = movieService;
     }
+//
+//    @GetMapping
+//    public String listMovies(Model model) {
+//        List<Movie> movies = movieService.getAllMovies();
+//        model.addAttribute("movies", movies);
+//        return "movie-list";
+//    }
 
     @GetMapping
-    public String listMovies(Model model) {
-        List<Movie> movies = movieService.getAllMovies();
+    public String listMovies(Model model,
+                             @RequestParam(required = false) String genre,
+                             @RequestParam(required = false) String keywords) {
+        List<Movie> movies;
+        if (genre != null && !genre.isEmpty()) {
+            movies = movieService.getMoviesByGenre(genre);
+        } else if (keywords != null && !keywords.isEmpty()) {
+            movies = movieService.searchMoviesByKeywords(keywords);
+        } else {
+            movies = movieService.getAllMovies();
+        }
+
+        Set<String> genres = movieService.getUniqueGenres();
+
         model.addAttribute("movies", movies);
+        model.addAttribute("genres", genres);
+        model.addAttribute("selectedGenre", genre);
         return "movie-list";
     }
 

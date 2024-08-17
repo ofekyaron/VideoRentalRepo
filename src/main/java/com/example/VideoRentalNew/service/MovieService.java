@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -111,6 +112,16 @@ public class MovieService {
 
     public List<Movie> getAvailableMovies(int limit) {
         return movieRepository.findByAvailableTrueOrderByIdDesc(limit);
+    }
+
+    public Set<String> getUniqueGenres() {
+        return movieRepository.findAll().stream()
+                .map(Movie::getGenre)
+                .collect(Collectors.toSet());
+    }
+
+    public List<Movie> getMoviesByGenre(String genre) {
+        return movieRepository.findByGenre(genre);
     }
 
 }

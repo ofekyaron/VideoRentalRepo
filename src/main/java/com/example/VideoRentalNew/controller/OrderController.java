@@ -42,10 +42,10 @@ public class OrderController {
         if (user != null) {
             List<Order> orders = orderService.getOrdersByUser(user.getId());
             model.addAttribute("orders", orders);
-            return "order-history"; // Ensure this Thymeleaf template exists
+            return "order-history";
         } else {
             model.addAttribute("error", "User not found");
-            return "error"; // Ensure this Thymeleaf template exists
+            return "error";
         }
     }
 
@@ -85,12 +85,11 @@ public class OrderController {
     public String returnMovie(@PathVariable Integer id, RedirectAttributes redirectAttributes) {
         try {
             orderService.returnMovie(id);
-            redirectAttributes.addFlashAttribute("message", "Return succeeded");
-            return "redirect:/orders/confirmation";
+            redirectAttributes.addFlashAttribute("successMessage", "Movie returned successfully");
         } catch (IllegalStateException | SQLException e) {
-            redirectAttributes.addFlashAttribute("error", "Unable to return movie");
-            return "redirect:/orders";
+            redirectAttributes.addFlashAttribute("errorMessage", "Unable to return movie: " + e.getMessage());
         }
+        return "redirect:/orders";
     }
 
 
@@ -113,22 +112,22 @@ public class OrderController {
     }
 
     @PostMapping("/place")
-    public String handlePlaceOrder(@RequestParam Integer movieId, Model model) throws SQLException {
+    public String handlePlaceOrder(@RequestParam Integer movieId, RedirectAttributes redirectAttributes) throws SQLException {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String username = auth.getName();
         User user = userService.findByUsername(username);
         if (user != null) {
             try {
                 Order order = orderService.placeOrder(user.getId(), movieId);
-                model.addAttribute("order", order);
-                return "redirect:/orders/confirmation"; // Ensure this redirect URL is handled properly
+                redirectAttributes.addFlashAttribute("successMessage", "Order placed successfully! Order ID: " + order.getId());
+                return "redirect:/orders"; // Redirect to the orders list page
             } catch (RuntimeException e) {
-                model.addAttribute("error", "Failed to place the order");
-                return "place-order"; // Ensure this Thymeleaf template exists
+                redirectAttributes.addFlashAttribute("errorMessage", "Failed to place the order: " + e.getMessage());
+                return "redirect:/orders/place?movieId=" + movieId; // Redirect back to the place order page
             }
         } else {
-            model.addAttribute("error", "User not found");
-            return "error"; // Ensure this Thymeleaf template exists
+            redirectAttributes.addFlashAttribute("errorMessage", "User not found");
+            return "redirect:/error"; // Redirect to error page
         }
     }
 
