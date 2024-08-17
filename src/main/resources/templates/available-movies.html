@@ -1,46 +1,108 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Available Movies</title>
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-</head>
-<body>
-<h1>Available Movies</h1>
-<div id="movieList"></div>
+<!--<!DOCTYPE html>-->
+<!--<html xmlns:th="http://www.thymeleaf.org"-->
+<!--      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">-->
+<!--<head>-->
+<!--    <meta charset="UTF-8">-->
+<!--    <meta name="viewport" content="width=device-width, initial-scale=1.0">-->
+<!--    <title>Available Movies - Video Rental System</title>-->
+<!--    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">-->
+<!--    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>-->
+<!--    <style>-->
+<!--        body {-->
+<!--            background-color: #f8f9fa;-->
+<!--        }-->
+<!--        .navbar {-->
+<!--            background-color: #4a5561;-->
+<!--        }-->
+<!--        .navbar-brand {-->
+<!--            font-weight: bold;-->
+<!--            color: #ffffff !important;-->
+<!--        }-->
+<!--        .movie-card {-->
+<!--            margin-bottom: 20px;-->
+<!--            padding: 15px;-->
+<!--            border: 1px solid #dee2e6;-->
+<!--            border-radius: 0.25rem;-->
+<!--            background-color: #ffffff;-->
+<!--        }-->
+<!--    </style>-->
+<!--</head>-->
+<!--<body>-->
+<!--&lt;!&ndash; Start of navbar &ndash;&gt;-->
+<!--<nav class="navbar navbar-expand-lg navbar-dark">-->
+<!--    <div class="container">-->
+<!--        <a class="navbar-brand" href="/">Video Rental System</a>-->
+<!--        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">-->
+<!--            <span class="navbar-toggler-icon"></span>-->
+<!--        </button>-->
+<!--        <div class="collapse navbar-collapse" id="navbarNav">-->
+<!--            <ul class="navbar-nav ml-auto">-->
+<!--                <li class="nav-item">-->
+<!--                    <a class="nav-link" href="/movies">Browse Movies</a>-->
+<!--                </li>-->
+<!--                <li class="nav-item">-->
+<!--                    <a class="nav-link" href="/orders">My Orders</a>-->
+<!--                </li>-->
+<!--                <li class="nav-item">-->
+<!--                    <a class="nav-link" href="/login">Login</a>-->
+<!--                </li>-->
+<!--                <li class="nav-item">-->
+<!--                    <form action="/logout" method="post">-->
+<!--                        <button type="submit" class="btn btn-link nav-link">Logout</button>-->
+<!--                    </form>-->
+<!--                </li>-->
+<!--                <li class="nav-item">-->
+<!--                    <a class="nav-link" href="/admin/dashboard">Admin Dashboard</a>-->
+<!--                </li>-->
+<!--            </ul>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--</nav>-->
+<!--&lt;!&ndash; End of navbar &ndash;&gt;-->
 
-<script>
-        function loadMovies() {
-            axios.get('/api/movies/available')
-                .then(function (response) {
-                    const movies = response.data;
-                    const movieList = document.getElementById('movieList');
-                    movieList.innerHTML = '';
-                    movies.forEach(function(movie) {
-                        movieList.innerHTML += `
-                            <div>
-                                <h2>${movie.title}</h2>
-                                <p>Genre: ${movie.genre}</p>
-                                <p>Release Year: ${movie.releaseYear}</p>
-                                <p>${movie.description}</p>
-                                <button onclick="rentMovie(${movie.id})">Rent</button>
-                            </div>
-                        `;
-                    });
-                })
-                .catch(function (error) {
-                    console.error('Error loading movies:', error);
-                });
-        }
+<!--<div class="container mt-4">-->
+<!--    <h1>Available Movies</h1>-->
+<!--    <p>If you can see this text, the page is loading correctly.</p>-->
+<!--    <div id="movieList" class="row"></div>-->
+<!--</div>-->
 
-        function rentMovie(movieId) {
-            // Assuming you have the user's ID available (e.g., from a login system)
-            const userId = 1; // Replace with actual user ID
-            window.location.href = `place-order.html?userId=${userId}&movieId=${movieId}`;
-        }
+<!--<script>-->
+<!--    function loadMovies() {-->
+<!--        axios.get('/api/movies/available')-->
+<!--            .then(function (response) {-->
+<!--                const movies = response.data;-->
+<!--                const movieList = document.getElementById('movieList');-->
+<!--                movieList.innerHTML = '';-->
+<!--                movies.forEach(function(movie) {-->
+<!--                    movieList.innerHTML += `-->
+<!--                        <div class="col-md-4">-->
+<!--                            <div class="movie-card">-->
+<!--                                <h2>${movie.title}</h2>-->
+<!--                                <p><strong>Genre:</strong> ${movie.genre}</p>-->
+<!--                                <p><strong>Release Year:</strong> ${movie.releaseYear}</p>-->
+<!--                                <p>${movie.description}</p>-->
+<!--                                <button class="btn btn-primary" onclick="rentMovie(${movie.id})">Rent</button>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                    `;-->
+<!--                });-->
+<!--            })-->
+<!--            .catch(function (error) {-->
+<!--                console.error('Error loading movies:', error);-->
+<!--            });-->
+<!--    }-->
 
-        loadMovies();
-    </script>
-</body>
-</html>
+<!--    function rentMovie(movieId) {-->
+<!--        // Assuming you have the user's ID available (e.g., from a login system)-->
+<!--        const userId = 1; // Replace with actual user ID-->
+<!--        window.location.href = `place-order.html?userId=${userId}&movieId=${movieId}`;-->
+<!--    }-->
+
+<!--    loadMovies();-->
+<!--</script>-->
+
+<!--<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>-->
+<!--<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>-->
+<!--<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>-->
+<!--</body>-->
+<!--</html>-->

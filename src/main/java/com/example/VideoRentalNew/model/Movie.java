@@ -41,7 +41,6 @@ public class Movie implements Serializable {
         this.id = id;
     }
 
-    // Getter and Setter for title
     public String getTitle() {
         return title;
     }
@@ -50,8 +49,6 @@ public class Movie implements Serializable {
         this.title = title;
     }
 
-
-    // Getter and Setter for genre
     public String getGenre() {
         return genre;
     }
@@ -115,5 +112,4 @@ public class Movie implements Serializable {
     public int hashCode() {
         return id != null ? id.hashCode() : 0;
     }
-
 }

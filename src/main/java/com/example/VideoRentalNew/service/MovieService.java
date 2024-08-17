@@ -100,5 +100,18 @@ public class MovieService {
         }
         return movies;
     }
+
+    public void saveMovie(Movie movie) throws SQLException {
+        movieRepository.save(movie);
+    }
+
+    public long getTotalMovies() {
+        return movieRepository.count();
+    }
+
+    public List<Movie> getAvailableMovies(int limit) {
+        return movieRepository.findByAvailableTrueOrderByIdDesc(limit);
+    }
+
 }
 

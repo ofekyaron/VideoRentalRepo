@@ -64,4 +64,8 @@ public class User {
     public String getRoles() {
         return roles;
     }
+
+    public enum Role {
+        USER, ADMIN
+    }
 }

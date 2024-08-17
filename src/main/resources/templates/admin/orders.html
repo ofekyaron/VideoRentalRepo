@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Manage Rentals - Video Rental System</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container mt-5">
+    <h1>Manage Rentals</h1>
+
+    <!-- Rentals List -->
+    <table class="table mt-4">
+        <thead>
+        <tr>
+            <th>Rental ID</th>
+            <th>User</th>
+            <th>Movie</th>
+            <th>Rental Date</th>
+            <th>Due Date</th>
+            <th>Return Date</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="order : ${orders}">
+            <td th:text="${order.id}"></td>
+            <td th:text="${order.getUser()}"></td>
+            <td th:text="${order.getMovieId()}"></td>
+            <td th:text="${#temporals.format(order.getOrderDate(), 'yyyy-MM-dd HH:mm')}"></td>
+            <td th:text="${#temporals.format(order.getReturnDate(), 'yyyy-MM-dd HH:mm')}"></td>
+            <td th:text="${order.returnDate != null ? #temporals.format(order.getReturnDate(), 'yyyy-MM-dd HH:mm') : 'Not returned'}"></td>
+            <td>
+                <span th:if="${order.returnDate == null}" class="text-warning">Active</span>
+                <span th:unless="${order.returnDate == null}" class="text-success">Returned</span>
+            </td>
+            <td>
+                <form th:if="${order.returnDate == null}" th:action="@{/admin/order/return/{id}(id=${order.id})}" method="post" style="display: inline;">
+                    <button type="submit" class="btn btn-sm btn-primary">Mark as Returned</button>
+                </form>
+                <span th:unless="${order.returnDate == null}" class="text-muted">No action needed</span>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <a href="/admin/dashboard" class="btn btn-secondary mt-3">Back to Admin Dashboard</a>
+</div>
+</body>
+</html>

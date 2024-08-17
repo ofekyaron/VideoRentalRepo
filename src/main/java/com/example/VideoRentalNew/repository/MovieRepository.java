@@ -11,5 +11,6 @@ import java.util.List;
 public interface MovieRepository extends JpaRepository<Movie, Integer> {
     List<Movie> findByGenre(String genre);
     List<Movie> findByTitleContainingIgnoreCase(String keywords);
-
+    @Query(value = "SELECT * FROM movies WHERE available = true ORDER BY id DESC LIMIT :limit", nativeQuery = true)
+    List<Movie> findByAvailableTrueOrderByIdDesc(int limit);
 }

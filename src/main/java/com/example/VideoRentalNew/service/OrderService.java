@@ -91,4 +91,17 @@ public class OrderService {
             return List.of(); // Return an empty list in case of error
         }
     }
+
+    public long getActiveRentals() {
+        return orderRepository.countByReturnDateIsNull();
+    }
+
+    public List<Order> getRecentOrders(int limit) {
+        return orderRepository.findTopNOrderByOrderDateDesc(limit);
+    }
+
+    public List<Order> getAllOrders() {
+        return orderRepository.findAll();
+    }
+
 }

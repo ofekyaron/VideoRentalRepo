@@ -1,20 +1,89 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <title>Video Rental System - Home</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .navbar {
+            background-color: #4a5561;
+        }
+        .navbar-brand {
+            font-weight: bold;
+            color: #ffffff !important;
+        }
+        .jumbotron {
+            background-color: #e9ecef;
+            padding: 2rem 1rem;
+        }
+    </style>
 </head>
 <body>
-<div class="container mt-5">
-    <h1>Welcome to Video Rental System</h1>
-    <nav>
-        <ul class="nav">
-            <li class="nav-item"><a class="nav-link" th:href="@{/movies}">Browse Movies</a></li>
-            <li class="nav-item"><a class="nav-link" th:href="@{/orders}">My Orders</a></li>
-            <li class="nav-item"><a class="nav-link" th:href="@{/login}">Login</a></li>
-            <li class="nav-item"><a class="nav-link" th:href="@{/logout}">Logout</a></li>
-        </ul>
-    </nav>
+<nav class="navbar navbar-expand-lg navbar-dark">
+    <div class="container">
+        <a class="navbar-brand" href="/">Video Rental System</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/movies}">Browse Movies</a>
+                </li>
+                <li class="nav-item" sec:authorize="isAuthenticated()">
+                    <a class="nav-link" th:href="@{/orders}">My Orders</a>
+                </li>
+                <li class="nav-item" sec:authorize="!isAuthenticated()">
+                    <a class="nav-link" th:href="@{/login}">Login</a>
+                </li>
+                <li class="nav-item" sec:authorize="isAuthenticated()">
+                    <form th:action="@{/logout}" method="post">
+                        <button type="submit" class="btn btn-link nav-link">Logout</button>
+                    </form>
+                </li>
+                <li class="nav-item" sec:authorize="hasRole('ADMIN')">
+                    <a class="nav-link" th:href="@{/admin/dashboard}">Admin Dashboard</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="jumbotron">
+    <div class="container">
+        <h1 class="display-4">Welcome to Video Rental System</h1>
+        <p class="lead">Discover and rent your favorite movies with ease.</p>
+        <hr class="my-4">
+        <p>Browse our extensive collection of movies and start your cinematic journey today!</p>
+        <a class="btn btn-primary btn-lg" th:href="@{/movies}" role="button">Browse Movies</a>
+    </div>
 </div>
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-4">
+            <h2>Latest Releases</h2>
+            <p>Check out our newest additions to the movie collection.</p>
+            <a class="btn btn-secondary" th:href="@{/movies/latest}" role="button">View Latest &raquo;</a>
+        </div>
+<!--        <div class="col-md-4">-->
+<!--            <h2>Top Rated</h2>-->
+<!--            <p>Explore the highest-rated movies in our catalog.</p>-->
+<!--            <a class="btn btn-secondary" th:href="@{/movies/top-rated}" role="button">View Top Rated &raquo;</a>-->
+<!--        </div>-->
+        <div class="col-md-4">
+            <h2>Genres</h2>
+            <p>Find movies by your favorite genres.</p>
+            <a class="btn btn-secondary" th:href="@{/movies/genres}" role="button">Browse Genres &raquo;</a>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
 </body>
 </html>
