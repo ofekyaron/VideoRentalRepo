@@ -3,6 +3,7 @@ package com.example.VideoRentalNew.model;
 import jakarta.persistence.*;
 
 import java.io.Serializable;
+import java.util.Set;
 
 @Entity
 @Table(name = "movies")
@@ -19,6 +20,8 @@ public class Movie implements Serializable {
     @Column(name = "available")
     private boolean available = true;
 
+    @OneToMany(mappedBy = "movie", fetch = FetchType.LAZY)
+    private Set<Review> reviews;
 
     // Default constructor
     public Movie() {

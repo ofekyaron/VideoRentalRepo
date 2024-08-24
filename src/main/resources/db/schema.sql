@@ -35,6 +35,20 @@ CREATE TABLE orders (
     FOREIGN KEY (movie_id) REFERENCES movies(id)
 );
 
+-- Drop the existing reviews table if it exists
+DROP TABLE IF EXISTS reviews;
+
+CREATE TABLE reviews (
+                         id INTEGER PRIMARY KEY AUTOINCREMENT,
+                         user_id INTEGER NOT NULL,
+                         movie_id INTEGER NOT NULL,
+                         content TEXT NOT NULL,
+                         rating INTEGER NOT NULL,
+                         created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                         FOREIGN KEY (user_id) REFERENCES users(id),
+                         FOREIGN KEY (movie_id) REFERENCES movies(id)
+);
+
 -- Insert sample data into the orders table (if needed)
 INSERT INTO orders (user_id, movie_id, order_date, return_date) VALUES
 (1, 1, '2024-08-01 10:00:00', '2024-08-03 15:30:00'),

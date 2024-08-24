@@ -18,6 +18,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/admin")
@@ -40,6 +42,19 @@ public class AdminController {
         model.addAttribute("activeRentals", orderService.getActiveRentals());
         model.addAttribute("recentOrders", orderService.getRecentOrders(5));
         model.addAttribute("availableMovies", movieService.getAvailableMovies());
+
+        // Add movie names
+        List<String> movieNames = movieService.getAllMovies().stream()
+                .map(Movie::getTitle)
+                .collect(Collectors.toList());
+        model.addAttribute("movieNames", movieNames);
+
+        // Add usernames
+        List<String> userNames = userService.getAllUsers().stream()
+                .map(User::getUsername)
+                .collect(Collectors.toList());
+        model.addAttribute("userNames", userNames);
+
         return "admin/dashboard";
     }
 

@@ -1,13 +1,18 @@
 package com.example.VideoRentalNew.controller;
 
 import com.example.VideoRentalNew.model.Movie;
+import com.example.VideoRentalNew.model.Review;
+import com.example.VideoRentalNew.model.User;
 import com.example.VideoRentalNew.service.MovieService;
+import com.example.VideoRentalNew.service.ReviewService;
+import com.example.VideoRentalNew.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -17,38 +22,54 @@ import java.util.Set;
 @RequestMapping("/movies")
 public class MoviesController {
 
-    @Autowired
     private MovieService movieService;
+    private ReviewService reviewService;
+    private UserService userService;
 
-    // You might want to add a method to handle movie details
-    @GetMapping("/{id}")
-    public String getMovieDetails(@PathVariable("id") Integer id, Model model) {
+    @Autowired
+    public void MovieController(MovieService movieService, ReviewService reviewService, UserService userService) {
+        this.movieService = movieService;
+        this.reviewService = reviewService;
+        this.userService = userService;
+    }
+
+    @PostMapping("/{id}/review")
+    public String addReview(@PathVariable Integer id, @ModelAttribute("newReview") Review review,
+                            @AuthenticationPrincipal UserDetails userDetails,
+                            RedirectAttributes redirectAttributes) {
         try {
             Movie movie = movieService.getMovieById(id);
-            if (movie != null) {
-                model.addAttribute("movie", movie);
-                return "movie-details";
-            } else {
-                model.addAttribute("error", "Movie not found.");
-                return "error";
-            }
-        } catch (SQLException e) {
-            model.addAttribute("error", "An error occurred while fetching the movie details.");
-            return "error";
+            User user = userService.findByUsername(userDetails.getUsername());
+            reviewService.saveReview(review, user, movie);
+            redirectAttributes.addFlashAttribute("successMessage", "Review added successfully!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Error adding review: " + e.getMessage());
         }
+        return "redirect:/movies/" + id;
+    }
+
+
+    @GetMapping("/{id}")
+    public String getMovieDetails(@PathVariable Integer id, Model model) throws SQLException {
+        Movie movie = movieService.getMovieById(id);
+        System.out.println("Movie fetched: " + movie);
+        if (movie == null) {
+            return "redirect:/movies";
+        }
+
+        List<Review> reviews = reviewService.getReviewsByMovieId(id);
+        System.out.println("Reviews fetched: " + reviews);
+
+        model.addAttribute("movie", movie);
+        model.addAttribute("reviews", reviews);
+        model.addAttribute("newReview", new Review());
+        return "movie-details";
     }
 
     @Autowired
     public MoviesController(MovieService movieService) {
         this.movieService = movieService;
     }
-//
-//    @GetMapping
-//    public String listMovies(Model model) {
-//        List<Movie> movies = movieService.getAllMovies();
-//        model.addAttribute("movies", movies);
-//        return "movie-list";
-//    }
 
     @GetMapping
     public String listMovies(Model model,
