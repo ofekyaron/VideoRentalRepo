@@ -18,7 +18,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.sql.SQLException;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @Controller
@@ -162,7 +161,7 @@ public class AdminController {
         try {
             orderService.returnMovie(id);
             redirectAttributes.addFlashAttribute("successMessage", "Movie returned successfully");
-        } catch (IllegalStateException | SQLException e) {
+        } catch (IllegalStateException e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Unable to return movie: " + e.getMessage());
         }
         return "redirect:/admin/orders";

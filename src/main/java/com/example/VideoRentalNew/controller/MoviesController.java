@@ -97,23 +97,18 @@ public class MoviesController {
             @RequestParam(value = "genre", required = false) String genre,
             @RequestParam(value = "keywords", required = false) String keywords,
             Model model) {
-        try {
-            List<Movie> movies;
-            if (genre != null && keywords != null) {
-                movies = movieService.searchMovies(genre, keywords);
-            } else if (keywords != null) {
-                movies = movieService.searchMovies(keywords);
-            } else {
-                movies = movieService.getAllMovies(); // Or handle case where no parameters are provided
-            }
-            model.addAttribute("movies", movies);
-            model.addAttribute("genre", genre);
-            model.addAttribute("keywords", keywords);
-            return "movie-list";
-        } catch (SQLException e) {
-            model.addAttribute("error", "An error occurred while searching for movies.");
-            return "error";
+        List<Movie> movies;
+        if (genre != null && keywords != null) {
+            movies = movieService.searchMovies(genre, keywords);
+        } else if (keywords != null) {
+            movies = movieService.searchMovies(keywords);
+        } else {
+            movies = movieService.getAllMovies(); // Or handle case where no parameters are provided
         }
+        model.addAttribute("movies", movies);
+        model.addAttribute("genre", genre);
+        model.addAttribute("keywords", keywords);
+        return "movie-list";
     }
 
 

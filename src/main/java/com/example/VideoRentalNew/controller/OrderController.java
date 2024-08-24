@@ -65,8 +65,6 @@ public class OrderController {
         } catch (RuntimeException e) {
             model.addAttribute("error", "Unable to place order");
             return "order-error"; // Ensure this Thymeleaf template exists
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
         }
     }
 
@@ -86,7 +84,7 @@ public class OrderController {
         try {
             orderService.returnMovie(id);
             redirectAttributes.addFlashAttribute("successMessage", "Movie returned successfully");
-        } catch (IllegalStateException | SQLException e) {
+        } catch (IllegalStateException e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Unable to return movie: " + e.getMessage());
         }
         return "redirect:/orders";
@@ -147,7 +145,7 @@ public class OrderController {
         } else if (keywords != null && !keywords.isEmpty()) {
             movies = movieService.searchMoviesByKeywords(keywords);
         } else {
-            movies = movieService.findAll(); // Default to show all movies
+            movies = movieService.getAllMovies(); // Default to show all movies
         }
         model.addAttribute("movies", movies);
         return "movie-list"; // Your Thymeleaf template

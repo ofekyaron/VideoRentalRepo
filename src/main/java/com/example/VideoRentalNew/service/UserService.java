@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 
 import java.sql.SQLException;
 import java.util.List;
-import java.util.Map;
 
 @Service
 public class UserService {
@@ -79,5 +78,28 @@ public class UserService {
 
     public void deleteUser(Integer id) throws SQLException {
         userRepository.deleteById(id);
+    }
+
+    public void registerNewUser(User user) throws Exception {
+        StringBuilder errorMessage = new StringBuilder();
+
+        if (userRepository.findByUsername(user.getUsername()) != null) {
+            errorMessage.append("Username already exists. ");
+        }
+        if (userRepository.findByEmail(user.getEmail()) != null) {
+            errorMessage.append("Email already exists. ");
+        }
+
+        if (errorMessage.length() > 0) {
+            throw new Exception(errorMessage.toString().trim());
+        }
+
+        // Encode the password
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+
+        // Set default role to USER
+        user.addRole("ROLE_USER");
+
+        userRepository.save(user);
     }
 }

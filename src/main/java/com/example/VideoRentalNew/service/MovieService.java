@@ -1,63 +1,49 @@
 package com.example.VideoRentalNew.service;
 
-import com.example.VideoRentalNew.dao.MovieDAO;
 import com.example.VideoRentalNew.model.Movie;
 import com.example.VideoRentalNew.repository.MovieRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional
 public class MovieService {
 
-    private MovieDAO movieDAO;
     private final MovieRepository movieRepository;
 
-
     @Autowired
-    public MovieService(MovieDAO movieDAO, MovieRepository movieRepository) {
-        this.movieDAO = movieDAO;
+    public MovieService(MovieRepository movieRepository) {
         this.movieRepository = movieRepository;
     }
 
-    // Method to add a new movie
-    public void addMovie(Movie movie) throws SQLException {
-        // Validate movie data if necessary
+    public void addMovie(Movie movie) {
         validateMovie(movie);
-
-        // Add movie using DAO
-        movieDAO.addMovie(movie);
+        movieRepository.save(movie);
     }
 
-    public List<Movie> getAvailableMovies() throws SQLException {
-        return movieDAO.getAvailableMovies();
+    public List<Movie> getAvailableMovies() {
+        return movieRepository.findByAvailableTrue();
     }
 
-    // Method to get a movie by IDdeleteMovie
-    public Movie getMovieById(Integer id) throws SQLException {
-        return movieDAO.getMovieById(id);
+    public Movie getMovieById(Integer id) {
+        return movieRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Movie not found with id: " + id));
     }
 
-    // Method to update an existing movie
-    public void updateMovie(Movie movie) throws SQLException {
-        // Validate movie data if necessary
+    public void updateMovie(Movie movie) {
         validateMovie(movie);
-
-        // Update movie using DAO
-        movieDAO.updateMovie(movie);
+        movieRepository.save(movie);
     }
 
-    // Method to delete a movie by ID
-    public void deleteMovie(Integer id) throws SQLException {
-        // Delete movie using DAO
-        movieDAO.deleteMovie(id);
+    public void deleteMovie(Integer id) {
+        movieRepository.deleteById(id);
     }
 
-    // Helper method to validate movie data
     private void validateMovie(Movie movie) {
         if (movie.getTitle() == null || movie.getTitle().isEmpty()) {
             throw new IllegalArgumentException("Movie title cannot be null or empty");
@@ -65,10 +51,8 @@ public class MovieService {
         // Additional validation can be added here
     }
 
-    public List<Movie> searchMovies(String query) throws SQLException {
-        // Implement search logic here
-        // This is a basic example; you might want to make this more sophisticated
-        return movieDAO.searchMovies(query);
+    public List<Movie> searchMovies(String query) {
+        return movieRepository.searchMovies(query);
     }
 
     public List<Movie> searchMoviesByGenre(String genre) {
@@ -79,31 +63,18 @@ public class MovieService {
         return movieRepository.findByTitleContainingIgnoreCase(keywords);
     }
 
-    public List<Movie> findAll() {
-        return movieRepository.findAll();
-    }
-
     public List<Movie> getAllMovies() {
         return movieRepository.findAll();
     }
 
     public List<Movie> searchMovies(String genre, String keywords) {
-        List<Movie> movies = movieRepository.findAll();
-        if (genre != null && !genre.isEmpty()) {
-            movies = movies.stream()
-                    .filter(movie -> movie.getGenre().toLowerCase().contains(genre.toLowerCase()))
-                    .collect(Collectors.toList());
+        if ((genre == null || genre.isEmpty()) && (keywords == null || keywords.isEmpty())) {
+            return getAllMovies();
         }
-        if (keywords != null && !keywords.isEmpty()) {
-            movies = movies.stream()
-                    .filter(movie -> movie.getTitle().toLowerCase().contains(keywords.toLowerCase()))
-                    .collect(Collectors.toList());
-        }
-        return movies;
-    }
-
-    public void saveMovie(Movie movie) throws SQLException {
-        movieRepository.save(movie);
+        return movieRepository.findAll().stream()
+                .filter(movie -> (genre == null || genre.isEmpty() || movie.getGenre().toLowerCase().contains(genre.toLowerCase())))
+                .filter(movie -> (keywords == null || keywords.isEmpty() || movie.getTitle().toLowerCase().contains(keywords.toLowerCase())))
+                .collect(Collectors.toList());
     }
 
     public long getTotalMovies() {
@@ -120,9 +91,12 @@ public class MovieService {
                 .collect(Collectors.toSet());
     }
 
+    public void saveMovie(Movie movie) {
+        validateMovie(movie);
+        movieRepository.save(movie);
+    }
+
     public List<Movie> getMoviesByGenre(String genre) {
         return movieRepository.findByGenre(genre);
     }
-
 }
-

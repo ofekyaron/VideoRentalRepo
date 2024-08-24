@@ -1,6 +1,5 @@
 package com.example.VideoRentalNew.service;
 
-import com.example.VideoRentalNew.dao.OrderDAO;
 import com.example.VideoRentalNew.model.Movie;
 import com.example.VideoRentalNew.model.Order;
 import com.example.VideoRentalNew.model.User;
@@ -10,22 +9,18 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
 public class OrderService {
 
-    private final OrderDAO orderDAO;
     private final MovieService movieService;
     private final OrderRepository orderRepository;
     private final UserRepository userRepository;
 
     @Autowired
-    public OrderService(OrderDAO orderDAO, MovieService movieService,
-                        OrderRepository orderRepository, UserRepository userRepository) {
-        this.orderDAO = orderDAO;
+    public OrderService(MovieService movieService, OrderRepository orderRepository, UserRepository userRepository) {
         this.movieService = movieService;
         this.orderRepository = orderRepository;
         this.userRepository = userRepository;
@@ -36,8 +31,8 @@ public class OrderService {
     }
 
     @Transactional
-    public Order placeOrder(Integer userId, Integer movieId) throws IllegalStateException, SQLException {
-        User user = userRepository.findById(Integer.valueOf(userId))
+    public Order placeOrder(Integer userId, Integer movieId) {
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalStateException("User not found"));
         Movie movie = movieService.getMovieById(movieId);
 
@@ -50,7 +45,7 @@ public class OrderService {
         }
 
         Order order = new Order(userId, movieId, LocalDateTime.now());
-        orderDAO.create(order);
+        order = orderRepository.save(order);
 
         movie.setAvailable(false);
         movieService.updateMovie(movie);
@@ -59,17 +54,16 @@ public class OrderService {
     }
 
     @Transactional
-    public void returnMovie(Integer orderId) throws IllegalStateException, SQLException {
-        Order order = orderDAO.find(orderId);
-        if (order == null) {
-            throw new IllegalStateException("Order not found");
-        }
+    public void returnMovie(Integer orderId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new IllegalStateException("Order not found"));
+
         if (order.getReturnDate() != null) {
             throw new IllegalStateException("Movie already returned");
         }
 
         order.setReturnDate(LocalDateTime.now());
-        orderDAO.update(order);
+        orderRepository.save(order);
 
         Movie movie = movieService.getMovieById(order.getMovieId());
         if (movie != null) {
@@ -79,17 +73,12 @@ public class OrderService {
     }
 
     public Order getOrderById(Integer id) {
-        return orderDAO.find(id);
+        return orderRepository.findById(id)
+                .orElseThrow(() -> new IllegalStateException("Order not found"));
     }
 
     public List<Order> getRecentOrdersByUser(Integer userId) {
-        try {
-            return orderDAO.getRecentOrdersByUser(userId, 5); // Get last 5 orders
-        } catch (SQLException e) {
-            // Log the error
-            e.printStackTrace();
-            return List.of(); // Return an empty list in case of error
-        }
+        return orderRepository.findRecentOrdersByUser(5); // Get last 5 orders
     }
 
     public long getActiveRentals() {
@@ -97,11 +86,12 @@ public class OrderService {
     }
 
     public List<Order> getRecentOrders(int limit) {
-        return orderRepository.findTopNOrderByOrderDateDesc(limit);
+        return orderRepository.findAllOrderByOrderDateDesc().stream()
+                .limit(limit)
+                .toList();
     }
 
     public List<Order> getAllOrders() {
         return orderRepository.findAll();
     }
-
 }
